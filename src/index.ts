@@ -9,17 +9,31 @@ interface IResponse {
   }
 }
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Origin": "*",
+}
+
 const makeResponse = (status: number, response: IResponse): Response => {
+  const headers = new Headers(CORS_HEADERS)
+  headers.set("Cache-Control", "public, max-age=3600, s-maxage=3600")
+
   return new Response(JSON.stringify(response), {
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers,
     status,
   })
 }
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        headers: CORS_HEADERS,
+        status: 204,
+      })
+    }
+
     const url = new URL(request.url)
     const requestTo = url.searchParams.get('q')
 
