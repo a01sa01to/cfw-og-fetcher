@@ -5,4 +5,10 @@
   "observability": {
     "enabled": true,
   },
+  "kv_namespaces": [
+    {
+      "binding": "OG_CACHE",
+      "id": "491edca16ec94943bb9fca8d685e5df1",
+    },
+  ],
 }
