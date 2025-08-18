@@ -3,7 +3,6 @@
   "scripts": {
     "dev": "wrangler dev --local",
     "typegen": "wrangler types",
-    "prettier": "prettier --write .",
     "lint": "eslint . && prettier --check .",
     "fix": "eslint . --fix && prettier --write ."
   },
