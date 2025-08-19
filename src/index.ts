@@ -200,5 +200,11 @@ app
 
     return c.text('TODO', 200)
   })
+  .get('/notfound', c => {
+    return c.text('Not Found', 404)
+  })
+  .get('/notfound-favicon', c => {
+    return c.text('Not Found', 404)
+  })
 
 export default app satisfies ExportedHandler<Env>
