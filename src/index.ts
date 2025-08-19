@@ -36,10 +36,10 @@ app
     const cachedResponse = await caches.default.match(c.req.raw)
     if (cachedResponse) return cachedResponse
     await next()
-    if (c.res.ok) {
-      const response = c.res.clone()
-      c.executionCtx.waitUntil(caches.default.put(c.req.raw, response))
-    }
+    // if (c.res.ok) {
+    //   const response = c.res.clone()
+    //   c.executionCtx.waitUntil(caches.default.put(c.req.raw, response))
+    // }
   })
   .get(
     '/',
@@ -69,9 +69,34 @@ app
           )
       }
     ),
-    c => {
+    async c => {
       const { q } = c.req.valid('query')
-      // const url = new URL(q)
+      const url = new URL(q)
+
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0',
+        },
+      }).catch(() => null)
+
+      if (!response)
+        return c.json(
+          {
+            error: true,
+            message: `Failed to fetch the URL`,
+          } satisfies IResponse,
+          500
+        )
+
+      if (!response.ok)
+        return c.json(
+          {
+            error: true,
+            message: `${response.status.toString()} ${response.statusText}`,
+          } satisfies IResponse,
+          404
+        )
 
       const resJson: IResponse = {
         data: {
