@@ -367,6 +367,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hono/valibot-validator@npm:^0.5.3":
+  version: 0.5.3
+  resolution: "@hono/valibot-validator@npm:0.5.3"
+  peerDependencies:
+    hono: ">=3.9.0"
+    valibot: ^1.0.0 || ^1.0.0-beta.4 || ^1.0.0-rc
+  checksum: 10c0/f67a5083d9ae61e2d50cebf3cb514f65253abc90857c5d33ee9b2a5859b57a94180664346268fa5f46b92d68fbae4582f47e2da28f3236a367ee2f7b48a3a129
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.1":
   version: 0.19.1
   resolution: "@humanfs/core@npm:0.19.1"
@@ -2250,6 +2260,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hono@npm:^4.9.2":
+  version: 4.9.2
+  resolution: "hono@npm:4.9.2"
+  checksum: 10c0/0f1a25ea729e90ce9ace8f8dc4e05a180a1a41e3fdd68e5564a4348c260b784b7dccfc4e4c9e004eb0f42acbd9360bda0856639088ba11639c6851929c1d77f7
+  languageName: node
+  linkType: hard
+
 "http-cache-semantics@npm:^4.1.1":
   version: 4.2.0
   resolution: "http-cache-semantics@npm:4.2.0"
@@ -3343,9 +3360,12 @@ __metadata:
   dependencies:
     "@a01sa01to/eslint-config": "npm:^2.1.5"
     "@a01sa01to/prettier-config": "npm:^1.0.11"
+    "@hono/valibot-validator": "npm:^0.5.3"
     eslint: "npm:^9.33.0"
+    hono: "npm:^4.9.2"
     prettier: "npm:^3.6.2"
     typescript: "npm:^5.9.2"
+    valibot: "npm:^1.1.0"
     wrangler: "npm:^4.30.0"
   languageName: unknown
   linkType: soft
@@ -4017,6 +4037,18 @@ __metadata:
   dependencies:
     punycode: "npm:^2.1.0"
   checksum: 10c0/4ef57b45aa820d7ac6496e9208559986c665e49447cb072744c13b66925a362d96dd5a46c4530a6b8e203e5db5fe849369444440cb22ecfc26c679359e5dfa3c
+  languageName: node
+  linkType: hard
+
+"valibot@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "valibot@npm:1.1.0"
+  peerDependencies:
+    typescript: ">=5"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/39580b4e4683cc44398fb775e88c03639dbaa7e6f587df416125916cb6307292d45df18f656054e8846093ced13a2d2fdc98659da6dd104d1d20180edcbd99d4
   languageName: node
   linkType: hard
 
