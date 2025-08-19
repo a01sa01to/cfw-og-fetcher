@@ -323,20 +323,14 @@ app
   .get('/nf', async c => {
     const img = await generateNotFoundImage()
     c.header('Cache-Control', CACHE_CONTROL_IMMUTABLE)
-    c.header(
-      'Content-Type',
-      typeof img === 'string' ? 'image/svg+xml' : 'image/webp'
-    )
+    c.header('Content-Type', 'image/svg+xml')
     return c.body(img, 200)
   })
   // not found favicon
   .get('/nff', async c => {
     const img = await generateNotFoundFaviconImage()
     c.header('Cache-Control', CACHE_CONTROL_IMMUTABLE)
-    c.header(
-      'Content-Type',
-      typeof img === 'string' ? 'image/svg+xml' : 'image/webp'
-    )
+    c.header('Content-Type', 'image/svg+xml')
     return c.body(img, 200)
   })
 
