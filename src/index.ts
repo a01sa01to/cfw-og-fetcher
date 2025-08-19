@@ -42,7 +42,17 @@ app
           const url = new URL(q)
           return url.protocol === 'http:' || url.protocol === 'https:'
         })
-      )
+      ),
+      (res, c) => {
+        if (!res.success)
+          return c.json(
+            {
+              error: true,
+              message: 'Bad Request',
+            } satisfies IResponse,
+            400
+          )
+      }
     ),
     async c => {
       const { q } = c.req.valid('query')

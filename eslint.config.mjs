@@ -10,5 +10,5 @@ export default [
       },
     },
   },
-  { ignores: ['.yarn/*', '.pnp*', '**/dist/*', 'worker-configuration.d.ts'] },
+  { ignores: ['.yarn/*', '.pnp*', '.wrangler/*', 'worker-configuration.d.ts'] },
 ]
