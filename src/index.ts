@@ -333,5 +333,15 @@ app
     c.header('Content-Type', 'image/svg+xml')
     return c.body(img, 200)
   })
+  .get('/token', c => {
+    const rand = crypto.getRandomValues(new Uint8Array(128))
+    const token = Array.from(rand, byte =>
+      byte.toString(16).padStart(2, '0')
+    ).join('')
+    c.header('Cache-Control', 'no-store')
+    c.header('Pragma', 'no-cache')
+    c.header('Expires', '0')
+    return c.text(token)
+  })
 
 export default app satisfies ExportedHandler<Env>
