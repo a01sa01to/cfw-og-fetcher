@@ -190,23 +190,32 @@ app
       },
     }).catch(() => null)
 
-    if (!response) return c.text(`Failed to fetch the URL`, 500)
-
-    if (!response.ok)
-      return c.text(
-        `Server Responded with ${response.status.toString()} ${response.statusText}`,
-        404
-      )
+    if (!response) return c.redirect('/nf', 302)
+    if (!response.ok) return c.redirect('/nf', 302)
 
     return c.text('TODO', 200)
   })
-  .get('/favicon', validator, c => {
+  .get('/favicon', validator, async c => {
+    const { q } = c.req.valid('query')
+    const url = new URL(q)
+
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': USER_AGENT,
+      },
+    }).catch(() => null)
+
+    if (!response) return c.redirect('/nff', 302)
+    if (!response.ok) return c.redirect('/nff', 302)
+
     return c.text('TODO', 200)
   })
-  .get('/notfound', c => {
+  // not found
+  .get('/nf', c => {
     return c.text('Not Found', 404)
   })
-  .get('/notfound-favicon', c => {
+  // not found favicon
+  .get('/nff', c => {
     return c.text('Not Found', 404)
   })
 
