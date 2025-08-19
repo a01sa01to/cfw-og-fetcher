@@ -2,6 +2,7 @@ import * as cheerio from 'cheerio'
 import * as v from 'valibot'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { fileTypeFromBuffer } from 'file-type'
 import { vValidator } from '@hono/valibot-validator'
 
 interface IResponse {
@@ -193,9 +194,14 @@ app
     if (!response) return c.redirect('/nf', 302)
     if (!response.ok) return c.redirect('/nf', 302)
 
-    return c.text('TODO', 200)
+    const buffer = await response.arrayBuffer()
+    const fileType = await fileTypeFromBuffer(buffer)
+    if (!fileType) return c.redirect('/nf', 302)
+    if (!fileType.mime.startsWith('image/')) return c.redirect('/nf', 302)
+
+    return c.json(fileType)
   })
-  .get('/favicon', validator, async c => {
+  .get('/fav', validator, async c => {
     const { q } = c.req.valid('query')
     const url = new URL(q)
 
@@ -208,7 +214,12 @@ app
     if (!response) return c.redirect('/nff', 302)
     if (!response.ok) return c.redirect('/nff', 302)
 
-    return c.text('TODO', 200)
+    const buffer = await response.arrayBuffer()
+    const fileType = await fileTypeFromBuffer(buffer)
+    if (!fileType) return c.redirect('/nf', 302)
+    if (!fileType.mime.startsWith('image/')) return c.redirect('/nf', 302)
+
+    return c.json(fileType, 200)
   })
   // not found
   .get('/nf', c => {

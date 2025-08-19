@@ -17,7 +17,9 @@
   "dependencies": {
     "@hono/valibot-validator": "^0.5.3",
     "cheerio": "^1.1.2",
+    "file-type": "^21.0.0",
     "hono": "^4.9.2",
-    "valibot": "^1.1.0"
+    "valibot": "^1.1.0",
+    "wasm-image-optimization": "^1.2.30"
   }
 }
