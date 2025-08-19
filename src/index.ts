@@ -200,6 +200,9 @@ app
 
     return c.text('TODO', 200)
   })
+  .get('/favicon', validator, c => {
+    return c.text('TODO', 200)
+  })
   .get('/notfound', c => {
     return c.text('Not Found', 404)
   })
