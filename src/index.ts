@@ -202,6 +202,24 @@ app
     if (!fileType) return c.redirect('/nf', 302)
     if (!fileType.mime.startsWith('image/')) return c.redirect('/nf', 302)
 
+    c.header('Cache-Control', CACHE_CONTROL)
+
+    // svg, jpeg, png, webp, avif のみ対応
+    // それ以外はそのままストリームで返す
+    if (
+      ![
+        'image/svg+xml',
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'image/avif',
+      ].includes(fileType.mime)
+    ) {
+      c.header('Content-Type', fileType.mime)
+      return c.body(buffer, 200)
+    }
+
+    c.header('Content-Type', 'image/webp')
     return c.json(fileType)
   })
   .get('/fav', validator, async c => {
@@ -222,6 +240,24 @@ app
     if (!fileType) return c.redirect('/nf', 302)
     if (!fileType.mime.startsWith('image/')) return c.redirect('/nf', 302)
 
+    c.header('Cache-Control', CACHE_CONTROL)
+
+    // svg, jpeg, png, webp, avif のみ対応
+    // それ以外はそのままストリームで返す
+    if (
+      ![
+        'image/svg+xml',
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'image/avif',
+      ].includes(fileType.mime)
+    ) {
+      c.header('Content-Type', fileType.mime)
+      return c.body(buffer, 200)
+    }
+
+    c.header('Content-Type', 'image/webp')
     return c.json(fileType, 200)
   })
   // not found
