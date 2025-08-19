@@ -2521,6 +2521,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"image-size@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "image-size@npm:2.0.2"
+  bin:
+    image-size: bin/image-size.js
+  checksum: 10c0/f09dd0f7cf8511cd20e4f756bdb5a7cb6d2240de3323f41bde266bed8373392a293892bf12e907e2995f52833fd88dd27cf6b1a52ab93968afc716cb78cd7b79
+  languageName: node
+  linkType: hard
+
 "import-fresh@npm:^3.2.1":
   version: 3.3.1
   resolution: "import-fresh@npm:3.3.1"
@@ -3608,6 +3617,7 @@ __metadata:
     eslint: "npm:^9.33.0"
     file-type: "npm:^21.0.0"
     hono: "npm:^4.9.2"
+    image-size: "npm:^2.0.2"
     prettier: "npm:^3.6.2"
     typescript: "npm:^5.9.2"
     valibot: "npm:^1.1.0"

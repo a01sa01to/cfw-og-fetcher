@@ -4,6 +4,8 @@ import { FileTypeParser } from 'file-type'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { detectXml } from '@file-type/xml'
+import imageSize from 'image-size'
+import { optimizeImage } from 'wasm-image-optimization'
 import { vValidator } from '@hono/valibot-validator'
 
 interface IResponse {
@@ -219,8 +221,33 @@ app
       return c.body(buffer, 200)
     }
 
+    const dimension = imageSize(new Uint8Array(buffer))
+
+    // 短辺に合わせる
+    // Twitter, Facebook などは 1200x628 なので ÷4 して 300x157 にする
+    const heightTmp = Math.ceil((300 / dimension.width) * dimension.height)
+    const widthTmp = Math.ceil((157 / dimension.height) * dimension.width)
+    const height2 = heightTmp >= 157 ? heightTmp : 157
+    const width2 = widthTmp >= 300 ? widthTmp : 300
+
+    // 拡大はしない (svg は viewBox が返されるらしいので例外)
+    const height =
+      fileType.ext === 'svg' ? height2 : Math.min(dimension.height, height2)
+    const width =
+      fileType.ext === 'svg' ? width2 : Math.min(dimension.width, width2)
+
+    const img = await optimizeImage({
+      format: 'webp',
+      height,
+      image: buffer,
+      quality: 75,
+      width,
+    })
+
+    if (!img) return c.redirect('/nf', 302)
+
     c.header('Content-Type', 'image/webp')
-    return c.json(fileType)
+    return c.body(img, 200)
   })
   .get('/fav', validator, async c => {
     const { q } = c.req.valid('query')
@@ -257,8 +284,32 @@ app
       return c.body(buffer, 200)
     }
 
+    const dimension = imageSize(new Uint8Array(buffer))
+
+    // 短辺を 32px に合わせる
+    const heightTmp = Math.ceil((32 / dimension.width) * dimension.height)
+    const widthTmp = Math.ceil((32 / dimension.height) * dimension.width)
+    const height2 = heightTmp >= 32 ? heightTmp : 32
+    const width2 = widthTmp >= 32 ? widthTmp : 32
+
+    // 拡大はしない
+    const height =
+      fileType.ext === 'svg' ? height2 : Math.min(dimension.height, height2)
+    const width =
+      fileType.ext === 'svg' ? width2 : Math.min(dimension.width, width2)
+
+    const img = await optimizeImage({
+      format: 'webp',
+      height,
+      image: buffer,
+      quality: 75,
+      width,
+    })
+
+    if (!img) return c.redirect('/nff', 302)
+
     c.header('Content-Type', 'image/webp')
-    return c.json(fileType, 200)
+    return c.body(img, 200)
   })
   // not found
   .get('/nf', c => {
