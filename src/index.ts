@@ -1,12 +1,18 @@
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { vValidator } from '@hono/valibot-validator'
+
 import * as cheerio from 'cheerio'
 import * as v from 'valibot'
 import { FileTypeParser } from 'file-type'
-import { Hono } from 'hono'
-import { cors } from 'hono/cors'
 import { detectXml } from '@file-type/xml'
 import imageSize from 'image-size'
 import { optimizeImage } from 'wasm-image-optimization'
-import { vValidator } from '@hono/valibot-validator'
+
+import {
+  generateNotFoundFaviconImage,
+  generateNotFoundImage,
+} from './not-found'
 
 interface IResponse {
   error: boolean
@@ -21,6 +27,8 @@ interface IResponse {
 
 const MAX_AGE = 3600
 const CACHE_CONTROL = `public, max-age=${MAX_AGE.toString()}, s-maxage=${MAX_AGE.toString()}`
+const CACHE_CONTROL_IMMUTABLE =
+  'public, max-age=31536000, s-maxage=31536000, immutable'
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0'
 
@@ -312,12 +320,24 @@ app
     return c.body(img, 200)
   })
   // not found
-  .get('/nf', c => {
-    return c.text('Not Found', 404)
+  .get('/nf', async c => {
+    const img = await generateNotFoundImage()
+    c.header('Cache-Control', CACHE_CONTROL_IMMUTABLE)
+    c.header(
+      'Content-Type',
+      typeof img === 'string' ? 'image/svg+xml' : 'image/webp'
+    )
+    return c.body(img, 200)
   })
   // not found favicon
-  .get('/nff', c => {
-    return c.text('Not Found', 404)
+  .get('/nff', async c => {
+    const img = await generateNotFoundFaviconImage()
+    c.header('Cache-Control', CACHE_CONTROL_IMMUTABLE)
+    c.header(
+      'Content-Type',
+      typeof img === 'string' ? 'image/svg+xml' : 'image/webp'
+    )
+    return c.body(img, 200)
   })
 
 export default app satisfies ExportedHandler<Env>

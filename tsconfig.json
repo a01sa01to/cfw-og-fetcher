@@ -16,6 +16,7 @@
   "include": [
     "worker-configuration.d.ts",
     "src/**/*.ts",
+    "src/**/*.tsx",
     "eslint.config.mjs",
     ".prettierrc.mjs"
   ]
