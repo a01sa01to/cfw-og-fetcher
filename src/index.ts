@@ -17,11 +17,40 @@ interface IResponse {
 
 const MAX_AGE = 3600
 const CACHE_CONTROL = `public, max-age=${MAX_AGE.toString()}, s-maxage=${MAX_AGE.toString()}`
+const USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0'
 
 const unescapeHtml = (str: string) => {
   const $ = cheerio.load(str)
   return $('body').text()
 }
+
+const validator = vValidator(
+  'query',
+  v.pipe(
+    v.object({
+      q: v.pipe(v.string(), v.nonEmpty()),
+    }),
+    v.check(({ q }) => {
+      try {
+        const url = new URL(q)
+        return url.protocol === 'http:' || url.protocol === 'https:'
+      } catch {
+        return false
+      }
+    })
+  ),
+  (res, c) => {
+    if (!res.success)
+      return c.json(
+        {
+          error: true,
+          message: 'Bad Request',
+        } satisfies IResponse,
+        400
+      )
+  }
+)
 
 const app = new Hono<{ Bindings: Env }>()
 
@@ -42,144 +71,134 @@ app
     const cachedResponse = await caches.default.match(c.req.raw)
     if (cachedResponse) return cachedResponse
     await next()
-    if (c.res.ok) {
-      const response = c.res.clone()
-      c.executionCtx.waitUntil(caches.default.put(c.req.raw, response))
-    }
+    // if (c.res.ok) {
+    //   const response = c.res.clone()
+    //   c.executionCtx.waitUntil(caches.default.put(c.req.raw, response))
+    // }
   })
-  .get(
-    '/',
-    vValidator(
-      'query',
-      v.pipe(
-        v.object({
-          q: v.pipe(v.string(), v.nonEmpty()),
-        }),
-        v.check(({ q }) => {
-          try {
-            const url = new URL(q)
-            return url.protocol === 'http:' || url.protocol === 'https:'
-          } catch {
-            return false
-          }
-        })
-      ),
-      (res, c) => {
-        if (!res.success)
-          return c.json(
-            {
-              error: true,
-              message: 'Bad Request',
-            } satisfies IResponse,
-            400
-          )
-      }
-    ),
-    async c => {
-      const { q } = c.req.valid('query')
-      const url = new URL(q)
+  .get('/og', validator, async c => {
+    const { q } = c.req.valid('query')
+    const url = new URL(q)
 
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0',
-        },
-      }).catch(() => null)
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': USER_AGENT,
+      },
+    }).catch(() => null)
 
-      if (!response)
-        return c.json(
-          {
-            error: true,
-            message: `Failed to fetch the URL`,
-          } satisfies IResponse,
-          500
-        )
+    if (!response)
+      return c.json(
+        {
+          error: true,
+          message: `Failed to fetch the URL`,
+        } satisfies IResponse,
+        500
+      )
 
-      if (!response.ok)
-        return c.json(
-          {
-            error: true,
-            message: `${response.status.toString()} ${response.statusText}`,
-          } satisfies IResponse,
-          404
-        )
+    if (!response.ok)
+      return c.json(
+        {
+          error: true,
+          message: `Server Responded with ${response.status.toString()} ${response.statusText}`,
+        } satisfies IResponse,
+        404
+      )
 
-      const resJson: IResponse & { data: NonNullable<IResponse['data']> } = {
-        data: {
-          title: q,
-        },
-        error: false,
-      }
-
-      const res = new HTMLRewriter()
-        .on('title', {
-          text(t) {
-            if (resJson.data.title === q) resJson.data.title = t.text || q
-          },
-        })
-        .on('meta', {
-          element(el) {
-            const property = el.getAttribute('property')
-            const name = el.getAttribute('name')
-            const content = el.getAttribute('content')
-            switch (property) {
-              case 'og:title':
-                if (resJson.data.title === q) resJson.data.title = content ?? q
-                break
-              case 'og:description':
-                resJson.data.description ??= content ?? undefined
-                break
-              case 'og:image':
-                resJson.data.image ??= content ?? undefined
-                break
-            }
-            switch (name) {
-              case 'title':
-                if (resJson.data.title === q) resJson.data.title = content ?? q
-                break
-              case 'description':
-                resJson.data.description ??= content ?? undefined
-                break
-              case 'image':
-                resJson.data.image ??= content ?? undefined
-                break
-            }
-          },
-        })
-        .on('link', {
-          element(el) {
-            const rel = el.getAttribute('rel')
-            const href = el.getAttribute('href')
-            if (rel === 'icon' || rel === 'shortcut icon')
-              resJson.data.favicon ??= href ?? undefined
-          },
-        })
-        .transform(response)
-
-      await res.text()
-
-      if (resJson.data.image?.startsWith('/'))
-        resJson.data.image = new URL(resJson.data.image, url.origin).toString()
-      if (resJson.data.favicon?.startsWith('/'))
-        resJson.data.favicon = new URL(
-          resJson.data.favicon,
-          url.origin
-        ).toString()
-
-      resJson.data.title = unescapeHtml(resJson.data.title)
-      resJson.data.description = resJson.data.description
-        ? unescapeHtml(resJson.data.description)
-        : undefined
-      resJson.data.image = resJson.data.image
-        ? unescapeHtml(resJson.data.image)
-        : undefined
-      resJson.data.favicon = resJson.data.favicon
-        ? unescapeHtml(resJson.data.favicon)
-        : undefined
-
-      c.header('Cache-Control', CACHE_CONTROL)
-      return c.json(resJson, 200)
+    const resJson: IResponse & { data: NonNullable<IResponse['data']> } = {
+      data: {
+        title: q,
+      },
+      error: false,
     }
-  )
+
+    const res = new HTMLRewriter()
+      .on('title', {
+        text(t) {
+          if (resJson.data.title === q) resJson.data.title = t.text || q
+        },
+      })
+      .on('meta', {
+        element(el) {
+          const property = el.getAttribute('property')
+          const name = el.getAttribute('name')
+          const content = el.getAttribute('content')
+          switch (property) {
+            case 'og:title':
+              if (resJson.data.title === q) resJson.data.title = content ?? q
+              break
+            case 'og:description':
+              resJson.data.description ??= content ?? undefined
+              break
+            case 'og:image':
+              resJson.data.image ??= content ?? undefined
+              break
+          }
+          switch (name) {
+            case 'title':
+              if (resJson.data.title === q) resJson.data.title = content ?? q
+              break
+            case 'description':
+              resJson.data.description ??= content ?? undefined
+              break
+            case 'image':
+              resJson.data.image ??= content ?? undefined
+              break
+          }
+        },
+      })
+      .on('link', {
+        element(el) {
+          const rel = el.getAttribute('rel')
+          const href = el.getAttribute('href')
+          if (rel === 'icon' || rel === 'shortcut icon')
+            resJson.data.favicon ??= href ?? undefined
+        },
+      })
+      .transform(response)
+
+    await res.text()
+
+    if (resJson.data.image?.startsWith('/'))
+      resJson.data.image = new URL(resJson.data.image, url.origin).toString()
+    if (resJson.data.favicon?.startsWith('/'))
+      resJson.data.favicon = new URL(
+        resJson.data.favicon,
+        url.origin
+      ).toString()
+
+    resJson.data.title = unescapeHtml(resJson.data.title)
+    resJson.data.description = resJson.data.description
+      ? unescapeHtml(resJson.data.description)
+      : undefined
+    resJson.data.image = resJson.data.image
+      ? unescapeHtml(resJson.data.image)
+      : undefined
+    resJson.data.favicon = resJson.data.favicon
+      ? unescapeHtml(resJson.data.favicon)
+      : undefined
+
+    c.header('Cache-Control', CACHE_CONTROL)
+    return c.json(resJson, 200)
+  })
+  .get('/img', validator, async c => {
+    const { q } = c.req.valid('query')
+    const url = new URL(q)
+
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': USER_AGENT,
+      },
+    }).catch(() => null)
+
+    if (!response) return c.text(`Failed to fetch the URL`, 500)
+
+    if (!response.ok)
+      return c.text(
+        `Server Responded with ${response.status.toString()} ${response.statusText}`,
+        404
+      )
+
+    return c.text('TODO', 200)
+  })
 
 export default app satisfies ExportedHandler<Env>
