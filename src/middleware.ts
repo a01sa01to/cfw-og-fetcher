@@ -18,7 +18,7 @@ export const validator = factory.createMiddleware<{
   out: { query: { url: URL; q: string } }
 }>(async (c, next) => {
   try {
-    const { q } = c.req.query()
+    const { q, t } = c.req.query()
 
     // q チェック
     const urlStr = v.parse(
@@ -38,6 +38,11 @@ export const validator = factory.createMiddleware<{
       q
     )
     const url = new URL(urlStr)
+
+    // t チェック
+    const token = v.parse(v.pipe(v.string(), v.nonEmpty()), t)
+    const savedToken = await c.env.SECRET.get()
+    if (token !== savedToken) throw new Error('Invalid token')
 
     c.req.addValidatedData('query', { q: urlStr, url })
 

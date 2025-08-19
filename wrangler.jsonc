@@ -6,4 +6,11 @@
   "observability": {
     "enabled": true,
   },
+  "secrets_store_secrets": [
+    {
+      "binding": "SECRET",
+      "store_id": "2d50ca65503e4129ac7b637ab9c14248",
+      "secret_name": "og-fetcher-token",
+    },
+  ],
 }

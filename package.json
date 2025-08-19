@@ -4,7 +4,8 @@
     "dev": "wrangler dev --local",
     "typegen": "wrangler types",
     "lint": "eslint . && prettier --check .",
-    "fix": "eslint . --fix && prettier --write ."
+    "fix": "eslint . --fix && prettier --write .",
+    "set:token": "wrangler secrets-store secret create 2d50ca65503e4129ac7b637ab9c14248 --name og-fetcher-token --scopes workers"
   },
   "devDependencies": {
     "@a01sa01to/eslint-config": "^2.1.5",
@@ -18,7 +19,6 @@
   },
   "dependencies": {
     "@file-type/xml": "^0.4.3",
-    "@hono/valibot-validator": "^0.5.3",
     "cheerio": "^1.1.2",
     "file-type": "^21.0.0",
     "hono": "^4.9.2",
