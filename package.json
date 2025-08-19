@@ -9,12 +9,14 @@
   "devDependencies": {
     "@a01sa01to/eslint-config": "^2.1.5",
     "@a01sa01to/prettier-config": "^1.0.11",
+    "@types/node": "^24.3.0",
     "eslint": "^9.33.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2",
     "wrangler": "^4.30.0"
   },
   "dependencies": {
+    "@file-type/xml": "^0.4.3",
     "@hono/valibot-validator": "^0.5.3",
     "cheerio": "^1.1.2",
     "file-type": "^21.0.0",

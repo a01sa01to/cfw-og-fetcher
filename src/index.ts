@@ -1,8 +1,9 @@
 import * as cheerio from 'cheerio'
 import * as v from 'valibot'
+import { FileTypeParser } from 'file-type'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { fileTypeFromBuffer } from 'file-type'
+import { detectXml } from '@file-type/xml'
 import { vValidator } from '@hono/valibot-validator'
 
 interface IResponse {
@@ -52,6 +53,8 @@ const validator = vValidator(
       )
   }
 )
+
+const fileTypeParser = new FileTypeParser({ customDetectors: [detectXml] })
 
 const app = new Hono<{ Bindings: Env }>()
 
@@ -195,7 +198,7 @@ app
     if (!response.ok) return c.redirect('/nf', 302)
 
     const buffer = await response.arrayBuffer()
-    const fileType = await fileTypeFromBuffer(buffer)
+    const fileType = await fileTypeParser.fromBuffer(buffer)
     if (!fileType) return c.redirect('/nf', 302)
     if (!fileType.mime.startsWith('image/')) return c.redirect('/nf', 302)
 
@@ -215,7 +218,7 @@ app
     if (!response.ok) return c.redirect('/nff', 302)
 
     const buffer = await response.arrayBuffer()
-    const fileType = await fileTypeFromBuffer(buffer)
+    const fileType = await fileTypeParser.fromBuffer(buffer)
     if (!fileType) return c.redirect('/nf', 302)
     if (!fileType.mime.startsWith('image/')) return c.redirect('/nf', 302)
 
