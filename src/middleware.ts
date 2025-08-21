@@ -8,10 +8,10 @@ export const cache = factory.createMiddleware(async (c, next) => {
   const cachedResponse = await caches.default.match(c.req.raw)
   if (cachedResponse) return cachedResponse
   await next()
-  // if (c.res.ok) {
-  //   const response = c.res.clone()
-  //   c.executionCtx.waitUntil(caches.default.put(c.req.raw, response))
-  // }
+  if (c.res.ok) {
+    const response = c.res.clone()
+    c.executionCtx.waitUntil(caches.default.put(c.req.raw, response))
+  }
 })
 
 export const validator = factory.createMiddleware<{
