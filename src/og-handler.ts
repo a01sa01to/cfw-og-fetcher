@@ -91,7 +91,8 @@ export const ogHandler = factory.createHandlers(validator, async c => {
 
   resJson.data.title = unescapeHtml(resJson.data.title)
   resJson.data.description = resJson.data.description
-    ? unescapeHtml(resJson.data.description)
+    ? // タグが含まれているかもなので 2 回 unescape する
+      unescapeHtml(unescapeHtml(resJson.data.description))
     : undefined
   resJson.data.image = resJson.data.image
     ? unescapeHtml(resJson.data.image)
