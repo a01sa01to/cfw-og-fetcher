@@ -21,7 +21,7 @@
     "@file-type/xml": "^0.4.3",
     "cheerio": "^1.1.2",
     "file-type": "^21.0.0",
-    "hono": "^4.9.2",
+    "hono": "^4.9.6",
     "image-size": "^2.0.2",
     "react": "^19.1.1",
     "satori": "^0.16.2",

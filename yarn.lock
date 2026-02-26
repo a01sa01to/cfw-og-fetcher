@@ -2544,10 +2544,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hono@npm:^4.9.2":
-  version: 4.9.2
-  resolution: "hono@npm:4.9.2"
-  checksum: 10c0/0f1a25ea729e90ce9ace8f8dc4e05a180a1a41e3fdd68e5564a4348c260b784b7dccfc4e4c9e004eb0f42acbd9360bda0856639088ba11639c6851929c1d77f7
+"hono@npm:^4.9.6":
+  version: 4.9.6
+  resolution: "hono@npm:4.9.6"
+  checksum: 10c0/182a144eb3b9e05bd9e43d15af15c93f60d3d747fef6c6904b9993e9db8129ea7fadf6190331d6f76b1bf6dd2b2c3b13efea105236f541ef411397e30475422d
   languageName: node
   linkType: hard
 
@@ -3756,7 +3756,7 @@ __metadata:
     cheerio: "npm:^1.1.2"
     eslint: "npm:^9.33.0"
     file-type: "npm:^21.0.0"
-    hono: "npm:^4.9.2"
+    hono: "npm:^4.9.6"
     image-size: "npm:^2.0.2"
     prettier: "npm:^3.6.2"
     react: "npm:^19.1.1"
