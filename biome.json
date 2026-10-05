@@ -12,7 +12,7 @@
 			"**/.vscode/**/*",
 			"**/index.html",
 			"**/vite.config.ts",
-			"!**/src/routeTree.gen.ts",
+			"!**/src/routeTree.gen.ts"
 		]
 	},
 	"formatter": {
@@ -23,7 +23,7 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"preset": "recommended"
 		}
 	},
 	"javascript": {
@@ -32,4 +32,3 @@
 		}
 	}
 }
-
