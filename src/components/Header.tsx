@@ -6,8 +6,8 @@ export default function Header() {
 		<HeaderUi>
 			<p className={styles.title}>OG Fetcher</p>
 			<nav className={styles.nav}>
-				<UtilLink href="/">Websites</UtilLink>
-				<UtilLink href="/">Tweets</UtilLink>
+				<UtilLink href="/admin/we">Websites</UtilLink>
+				<UtilLink href="/admin/tw">Tweets</UtilLink>
 			</nav>
 		</HeaderUi>
 	);
