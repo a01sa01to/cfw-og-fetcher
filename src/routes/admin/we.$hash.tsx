@@ -74,14 +74,13 @@ function RouteComponent() {
 		);
 	}
 
-	if (data.createdAt.valueOf() === data.updatedAt.valueOf()) {
+	if (data.fetchedAt === null) {
 		return (
 			<Card>
 				<H2>Edit</H2>
+				<p>Hash: {data.hash}</p>
 				<p>URL: {data.url}</p>
 				<p>Created At: {new Date(data.createdAt).toLocaleString()}</p>
-				<p>Last Updated: {new Date(data.updatedAt).toLocaleString()}</p>
-				<p>Hash: {data.hash}</p>
 				<p>Note: not crawled yet.</p>
 				<Button onClick={handleDelete} variant="outline" size="large">
 					Delete
@@ -93,14 +92,21 @@ function RouteComponent() {
 	return (
 		<Card>
 			<H2>Edit</H2>
+			<p>Hash: {data.hash}</p>
 			<p>URL: {data.url}</p>
 			<p>Title: {data.title ?? "-"}</p>
 			<p>Description: {data.description ?? "-"}</p>
 			<p>Image: {data.image ?? "-"}</p>
 			<p>Favicon: {data.favicon ?? "-"}</p>
 			<p>Created At: {new Date(data.createdAt).toLocaleString()}</p>
-			<p>Last Updated: {new Date(data.updatedAt).toLocaleString()}</p>
-			<p>Hash: {data.hash}</p>
+			<p>Fetched At: {new Date(data.fetchedAt).toLocaleString()}</p>
+			<p>
+				Last Reference:{" "}
+				{data.lastReference
+					? new Date(data.lastReference).toLocaleString()
+					: "-"}
+			</p>
+			<p>Last Crawl Status: {data.lastCrawlStatus ?? "-"}</p>
 			<Button onClick={handleDelete} variant="outline" size="large">
 				Delete
 			</Button>

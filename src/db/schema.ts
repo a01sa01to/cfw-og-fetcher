@@ -10,19 +10,22 @@ import {
 export const og = sqliteTable(
 	"og",
 	{
-		url: text("url").primaryKey(),
-		hash: text("hash").notNull(),
+		hash: text("hash").primaryKey(),
+		url: text("url").notNull(),
 		title: text("title"),
 		description: text("description"),
 		image: text("image"),
 		favicon: text("favicon"),
 		createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-		updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+		fetchedAt: integer("fetched_at", { mode: "timestamp" }),
+		lastReference: integer("last_reference", { mode: "timestamp" }),
+		lastCrawlStatus: integer("last_crawl_status"),
 	},
 	(table) => [
-		uniqueIndex("uq_og_hash").on(table.hash),
+		uniqueIndex("uq_og_url").on(table.url),
 		index("idx_og_created_at").on(table.createdAt),
-		index("idx_og_updated_at").on(table.updatedAt),
+		index("idx_og_fetched_at").on(table.fetchedAt),
+		index("idx_og_last_reference").on(table.lastReference),
 	],
 );
 
@@ -39,7 +42,8 @@ export const tweet = sqliteTable(
 			.notNull()
 			.default(false),
 		rawJson: text("raw_json").notNull(),
-		fetchedAt: integer("fetched_at", { mode: "timestamp" }).notNull(),
+		fetchedAt: integer("fetched_at", { mode: "timestamp" }),
+		lastReference: integer("last_reference", { mode: "timestamp" }),
 	},
 	(table) => [
 		index("idx_tweets_author_date").on(
@@ -48,5 +52,6 @@ export const tweet = sqliteTable(
 		),
 		index("idx_tweets_created_at").on(table.createdAt),
 		index("idx_tweets_fetched_at").on(table.fetchedAt),
+		index("idx_tweets_last_reference").on(table.lastReference),
 	],
 );

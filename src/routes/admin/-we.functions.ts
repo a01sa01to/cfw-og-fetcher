@@ -22,13 +22,15 @@ export const getAllData = createServerFn().handler(async () => {
 	const db = drizzle(env.DB, { schema });
 	return db.query.og.findMany({
 		columns: {
+			hash: true,
 			url: true,
 			title: true,
 			createdAt: true,
-			updatedAt: true,
-			hash: true,
+			fetchedAt: true,
+			lastCrawlStatus: true,
+			lastReference: true,
 		},
-		orderBy: (og, { desc }) => [desc(og.updatedAt)],
+		orderBy: (og, { desc }) => [desc(og.fetchedAt)],
 	});
 });
 
@@ -64,14 +66,16 @@ export const createNewData = createServerFn({ method: "POST" })
 
 		const now = new Date();
 		const result = await db.insert(schema.og).values({
+			hash: await generateHash(data.url),
 			url: data.url,
 			title: null,
 			description: null,
 			image: null,
 			favicon: null,
 			createdAt: now,
-			updatedAt: now,
-			hash: await generateHash(data.url),
+			fetchedAt: null,
+			lastReference: null,
+			lastCrawlStatus: null,
 		});
 		if (!result.success) {
 			console.error("Insert failed:", result.error);

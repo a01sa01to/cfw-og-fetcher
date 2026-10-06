@@ -39,21 +39,33 @@ function RouteComponent() {
 						<tr>
 							<th>URL</th>
 							<th>Title</th>
-							<th>Created At</th>
-							<th>Last Updated</th>
+							<th>Created</th>
+							<th>Last Fetched</th>
+							<th>Last Reference</th>
+							<th>Last Crawl Status</th>
 							<th>Actions</th>
 						</tr>
 					</thead>
 					<tbody>
 						{data.map((item) => (
 							<tr key={item.hash}>
-								<td>{item.url}</td>
+								<td>
+									<UtilLink href={item.url}>{item.url}</UtilLink>
+								</td>
 								<td>{item.title ?? "-"}</td>
 								<td>{new Date(item.createdAt).toLocaleString()}</td>
-								<td>{new Date(item.updatedAt).toLocaleString()}</td>
 								<td>
-									<UtilLink href={item.url}>View</UtilLink>
-									{" / "}
+									{item.fetchedAt
+										? new Date(item.fetchedAt).toLocaleString()
+										: "-"}
+								</td>
+								<td>
+									{item.lastReference
+										? new Date(item.lastReference).toLocaleString()
+										: "-"}
+								</td>
+								<td>{item.lastCrawlStatus ?? "-"}</td>
+								<td>
 									<UtilLink href={`/admin/we/${item.hash}`}>Edit</UtilLink>
 								</td>
 							</tr>
