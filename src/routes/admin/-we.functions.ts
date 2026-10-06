@@ -1,5 +1,6 @@
 import { env } from "cloudflare:workers";
 import { createServerFn } from "@tanstack/react-start";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import * as v from "valibot";
 import * as schema from "~/db/schema";
@@ -77,4 +78,19 @@ export const createNewData = createServerFn({ method: "POST" })
 			throw new Error(`Insert failed: ${result.error}`);
 		}
 		return { alreadyExists: false, url: data.url };
+	});
+
+export const deleteDataByHash = createServerFn({ method: "POST" })
+	.validator((data) => v.parse(HashStringValidator, data))
+	.handler(async ({ data }) => {
+		const db = drizzle(env.DB, { schema });
+		const result = await db
+			.delete(schema.og)
+			.where(eq(schema.og.hash, data))
+			.run();
+		if (!result.success) {
+			console.error("Delete failed:", result.error);
+			throw new Error(`Delete failed: ${result.error}`);
+		}
+		return { hash: data };
 	});

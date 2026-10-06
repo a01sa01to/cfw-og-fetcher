@@ -1,8 +1,19 @@
-import { H2 } from "@a01sa01to/ui";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { Button, H2, toast } from "@a01sa01to/ui";
+import {
+	queryOptions,
+	useMutation,
+	useQueryClient,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import Card from "~/components/Card";
-import { getDataByHash, getDataByHash$$key } from "./-we.functions";
+import {
+	deleteDataByHash,
+	getAllData$$key,
+	getDataByHash,
+	getDataByHash$$key,
+} from "./-we.functions";
 
 const QueryOptions = (hash: string) =>
 	queryOptions({
@@ -22,12 +33,43 @@ export const Route = createFileRoute("/admin/we/$hash")({
 function RouteComponent() {
 	const { hash } = Route.useParams();
 	const { data } = useSuspenseQuery(QueryOptions(hash));
+	const queryClient = useQueryClient();
+	const deleteDataFn = useServerFn(deleteDataByHash);
+	const navigate = useNavigate();
+
+	const mutation = useMutation({
+		mutationFn: (hash: string) => deleteDataFn({ data: hash }),
+		onError: (error) => {
+			console.error("Delete failed:", error);
+			toast.push({
+				type: "error",
+				title: "Error",
+				description: error.message,
+			});
+		},
+		onSuccess: ({ hash }) => {
+			toast.push({
+				type: "success",
+				title: "Deleted",
+			});
+			queryClient.invalidateQueries(QueryOptions(hash));
+			queryClient.invalidateQueries({ queryKey: getAllData$$key() });
+			navigate({ to: "/admin/we" });
+		},
+	});
+
+	const handleDelete = () => {
+		if (confirm("Are you sure?")) mutation.mutate(hash);
+	};
 
 	if (!data) {
 		return (
 			<Card>
 				<H2>Edit</H2>
 				<p>Not found: {hash}</p>
+				<Button onClick={handleDelete} variant="outline" size="large">
+					Delete
+				</Button>
 			</Card>
 		);
 	}
@@ -41,6 +83,9 @@ function RouteComponent() {
 				<p>Last Updated: {new Date(data.updatedAt).toLocaleString()}</p>
 				<p>Hash: {data.hash}</p>
 				<p>Note: not crawled yet.</p>
+				<Button onClick={handleDelete} variant="outline" size="large">
+					Delete
+				</Button>
 			</Card>
 		);
 	}
@@ -56,6 +101,9 @@ function RouteComponent() {
 			<p>Created At: {new Date(data.createdAt).toLocaleString()}</p>
 			<p>Last Updated: {new Date(data.updatedAt).toLocaleString()}</p>
 			<p>Hash: {data.hash}</p>
+			<Button onClick={handleDelete} variant="outline" size="large">
+				Delete
+			</Button>
 		</Card>
 	);
 }
