@@ -3,19 +3,18 @@ import type { QueryClient } from "@tanstack/react-query";
 import {
 	createRootRouteWithContext,
 	HeadContent,
+	Link,
 	Scripts,
 } from "@tanstack/react-router";
-import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import "@a01sa01to/ui/layer.css";
 import "@a01sa01to/ui/reset.css";
 import "@a01sa01to/ui/style.css";
-import Header from "~/components/Header";
-import { MainContainer } from "@a01sa01to/ui";
+import { configureAdapter, MainContainer } from "@a01sa01to/ui";
 
-import { configureAdapter } from "@a01sa01to/ui";
-import { Link } from "@tanstack/react-router";
+import Header from "~/components/Header";
+import TanStackQueryDevtools from "~/integrations/tanstack-query/devtools";
 
 configureAdapter("link", ({ href, ...props }) => <Link {...props} to={href} />);
 

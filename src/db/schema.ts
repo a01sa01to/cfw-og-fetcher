@@ -1,12 +1,44 @@
-import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
-import { sql } from "drizzle-orm";
+import { desc } from "drizzle-orm";
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-export const todos = sqliteTable("todos", {
-	id: integer({ mode: "number" }).primaryKey({
-		autoIncrement: true,
-	}),
-	title: text().notNull(),
-	createdAt: integer("created_at", { mode: "timestamp" }).default(
-		sql`(unixepoch())`,
-	),
-});
+export const og = sqliteTable(
+	"og",
+	{
+		url: text("url").primaryKey(),
+		title: text("title"),
+		description: text("description"),
+		image: text("image"),
+		favicon: text("favicon"),
+		createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+		updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+	},
+	(table) => [
+		index("idx_og_created_at").on(table.createdAt),
+		index("idx_og_updated_at").on(table.updatedAt),
+	],
+);
+
+export const tweet = sqliteTable(
+	"tweet",
+	{
+		idStr: text("id_str").primaryKey(),
+		authorScreenName: text("author_screen_name").notNull(),
+		authorName: text("author_name").notNull(),
+		text: text("text").notNull(),
+		createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+		likeCount: integer("like_count").notNull().default(0),
+		hasMedia: integer("has_media", { mode: "boolean" })
+			.notNull()
+			.default(false),
+		rawJson: text("raw_json").notNull(),
+		fetchedAt: integer("fetched_at", { mode: "timestamp" }).notNull(),
+	},
+	(table) => [
+		index("idx_tweets_author_date").on(
+			table.authorScreenName,
+			desc(table.createdAt),
+		),
+		index("idx_tweets_created_at").on(table.createdAt),
+		index("idx_tweets_fetched_at").on(table.fetchedAt),
+	],
+);
