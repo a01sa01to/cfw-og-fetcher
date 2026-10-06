@@ -1,10 +1,17 @@
 import { desc } from "drizzle-orm";
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+	index,
+	integer,
+	sqliteTable,
+	text,
+	uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 export const og = sqliteTable(
 	"og",
 	{
 		url: text("url").primaryKey(),
+		hash: text("hash").notNull(),
 		title: text("title"),
 		description: text("description"),
 		image: text("image"),
@@ -13,6 +20,7 @@ export const og = sqliteTable(
 		updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 	},
 	(table) => [
+		uniqueIndex("uq_og_hash").on(table.hash),
 		index("idx_og_created_at").on(table.createdAt),
 		index("idx_og_updated_at").on(table.updatedAt),
 	],
