@@ -4,13 +4,16 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@a01sa01to/ui': d38916e326bcb0596c3324bc59a358208ee5d89b5d8171cf2f416e5864bafd1a
+
 importers:
 
   .:
     devDependencies:
       '@a01sa01to/ui':
         specifier: 3.0.0-alpha.2
-        version: 3.0.0-alpha.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 3.0.0-alpha.2(patch_hash=d38916e326bcb0596c3324bc59a358208ee5d89b5d8171cf2f416e5864bafd1a)(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@biomejs/biome':
         specifier: ^2.5.15
         version: 2.5.15
@@ -56,6 +59,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^6.0.1
         version: 6.1.1(vite@8.3.2(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       drizzle-kit:
         specifier: ^0.31.9
         version: 0.31.11
@@ -68,6 +74,9 @@ importers:
       lint-staged:
         specifier: ^17.6.0
         version: 17.6.0
+      lucide-react:
+        specifier: ^1.52.0
+        version: 1.52.0(@types/react@19.3.0)(react@19.3.0)
       react:
         specifier: ^19.2.0
         version: 19.3.0
@@ -2821,7 +2830,7 @@ packages:
 
 snapshots:
 
-  '@a01sa01to/ui@3.0.0-alpha.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@a01sa01to/ui@3.0.0-alpha.2(patch_hash=d38916e326bcb0596c3324bc59a358208ee5d89b5d8171cf2f416e5864bafd1a)(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@shikijs/colorized-brackets': 4.5.0
       '@shikijs/themes': 4.5.0

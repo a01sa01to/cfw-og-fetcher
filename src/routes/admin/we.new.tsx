@@ -1,4 +1,4 @@
-import { Link } from "@a01sa01to/ui";
+import { Button, H2, Input, Label, toast } from "@a01sa01to/ui";
 import {
 	queryOptions,
 	useMutation,
@@ -7,9 +7,10 @@ import {
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import type { SubmitEvent } from "react";
+import Card from "~/components/Card";
 import { createNewData, getAllData, getAllData$$key } from "./-we.functions";
 
-const weQueryOptions = () =>
+const QueryOptions = () =>
 	queryOptions({
 		queryKey: getAllData$$key(),
 		queryFn: () => getAllData(),
@@ -29,14 +30,27 @@ function RouteComponent() {
 			createDataFn({ data: variables }),
 		onError: (error) => {
 			console.error("Mutation failed:", error);
-			alert(`エラー: ${error.message}`);
+			toast.push({
+				type: "error",
+				title: "Error",
+				description: error.message,
+			});
 		},
-		onSuccess: ({ alreadyExists }) => {
+		onSuccess: ({ alreadyExists, url }) => {
 			if (alreadyExists) {
-				alert("このURLは既に存在します。");
+				toast.push({
+					type: "warning",
+					title: "Already exists",
+					description: `${url} is already in the database.`,
+				});
+			} else {
+				toast.push({
+					type: "success",
+					title: "Added",
+					description: `${url} has been added to the database.`,
+				});
 			}
-			console.log("Success");
-			queryClient.invalidateQueries(weQueryOptions());
+			queryClient.invalidateQueries(QueryOptions());
 			navigate({ to: "/admin/we" });
 		},
 	});
@@ -49,14 +63,26 @@ function RouteComponent() {
 	};
 
 	return (
-		<div>
-			<form onSubmit={handleSubmit}>
-				<input name="url" type="text" placeholder="Enter URL" required />
-				<button type="submit" disabled={mutation.isPending}>
-					{mutation.isPending ? "Submitting..." : "Submit"}
-				</button>
+		<Card>
+			<H2>Add New</H2>
+			<form
+				onSubmit={handleSubmit}
+				style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+			>
+				<Label>
+					URL
+					<Input name="url" type="url" required />
+				</Label>
+				<br />
+				<Button
+					type="submit"
+					aria-disabled={mutation.isPending}
+					size="medium"
+					variant="outline"
+				>
+					{mutation.isPending ? "Loading..." : "Add"}
+				</Button>
 			</form>
-			<Link href="/admin/we">Close</Link>
-		</div>
+		</Card>
 	);
 }

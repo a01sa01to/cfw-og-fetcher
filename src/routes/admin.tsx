@@ -11,7 +11,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import "@a01sa01to/ui/layer.css";
 import "@a01sa01to/ui/reset.css";
 import "@a01sa01to/ui/style.css";
-import { configureAdapter, MainContainer } from "@a01sa01to/ui";
+import { configureAdapter, MainContainer, ToastContainer } from "@a01sa01to/ui";
 
 import Header from "~/components/Header";
 import TanStackQueryDevtools from "~/integrations/tanstack-query/devtools";
@@ -49,8 +49,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body>
 				<Header />
 				<MainContainer>
-					<div style={{ display: "flex", gap: "1rem" }}>{children}</div>
+					<div style={{ display: "flex", gap: "4rem" }}>{children}</div>
 				</MainContainer>
+				<ToastContainer />
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",
