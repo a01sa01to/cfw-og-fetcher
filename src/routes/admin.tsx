@@ -48,7 +48,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<Header />
-				<MainContainer>{children}</MainContainer>
+				<MainContainer>
+					<div style={{ display: "flex", gap: "1rem" }}>{children}</div>
+				</MainContainer>
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",

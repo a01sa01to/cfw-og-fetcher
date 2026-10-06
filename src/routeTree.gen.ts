@@ -13,6 +13,8 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminTwRouteImport } from './routes/admin/tw'
 import { Route as AdminWeRouteImport } from './routes/admin/we'
+import { Route as AdminWeHashRouteImport } from './routes/admin/we.$hash'
+import { Route as AdminWeNewRouteImport } from './routes/admin/we.new'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
@@ -34,31 +36,60 @@ const AdminWeRoute = AdminWeRouteImport.update({
   path: '/we',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminWeHashRoute = AdminWeHashRouteImport.update({
+  id: '/$hash',
+  path: '/$hash',
+  getParentRoute: () => AdminWeRoute,
+} as any)
+const AdminWeNewRoute = AdminWeNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminWeRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/admin/tw': typeof AdminTwRoute
-  '/admin/we': typeof AdminWeRoute
+  '/admin/we': typeof AdminWeRouteWithChildren
   '/admin/': typeof AdminIndexRoute
+  '/admin/we/$hash': typeof AdminWeHashRoute
+  '/admin/we/new': typeof AdminWeNewRoute
 }
 export interface FileRoutesByTo {
   '/admin/tw': typeof AdminTwRoute
-  '/admin/we': typeof AdminWeRoute
+  '/admin/we': typeof AdminWeRouteWithChildren
   '/admin': typeof AdminIndexRoute
+  '/admin/we/$hash': typeof AdminWeHashRoute
+  '/admin/we/new': typeof AdminWeNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/admin': typeof AdminRouteWithChildren
   '/admin/tw': typeof AdminTwRoute
-  '/admin/we': typeof AdminWeRoute
+  '/admin/we': typeof AdminWeRouteWithChildren
   '/admin/': typeof AdminIndexRoute
+  '/admin/we/$hash': typeof AdminWeHashRoute
+  '/admin/we/new': typeof AdminWeNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/admin' | '/admin/tw' | '/admin/we' | '/admin/'
+  fullPaths:
+    | '/admin'
+    | '/admin/tw'
+    | '/admin/we'
+    | '/admin/'
+    | '/admin/we/$hash'
+    | '/admin/we/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/admin/tw' | '/admin/we' | '/admin'
-  id: '__root__' | '/admin' | '/admin/tw' | '/admin/we' | '/admin/'
+  to: '/admin/tw' | '/admin/we' | '/admin' | '/admin/we/$hash' | '/admin/we/new'
+  id:
+    | '__root__'
+    | '/admin'
+    | '/admin/tw'
+    | '/admin/we'
+    | '/admin/'
+    | '/admin/we/$hash'
+    | '/admin/we/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -95,18 +126,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWeRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/we/$hash': {
+      id: '/admin/we/$hash'
+      path: '/$hash'
+      fullPath: '/admin/we/$hash'
+      preLoaderRoute: typeof AdminWeHashRouteImport
+      parentRoute: typeof AdminWeRoute
+    }
+    '/admin/we/new': {
+      id: '/admin/we/new'
+      path: '/new'
+      fullPath: '/admin/we/new'
+      preLoaderRoute: typeof AdminWeNewRouteImport
+      parentRoute: typeof AdminWeRoute
+    }
   }
 }
 
+interface AdminWeRouteChildren {
+  AdminWeHashRoute: typeof AdminWeHashRoute
+  AdminWeNewRoute: typeof AdminWeNewRoute
+}
+
+const AdminWeRouteChildren: AdminWeRouteChildren = {
+  AdminWeHashRoute: AdminWeHashRoute,
+  AdminWeNewRoute: AdminWeNewRoute,
+}
+
+const AdminWeRouteWithChildren =
+  AdminWeRoute._addFileChildren(AdminWeRouteChildren)
+
 interface AdminRouteChildren {
   AdminTwRoute: typeof AdminTwRoute
-  AdminWeRoute: typeof AdminWeRoute
+  AdminWeRoute: typeof AdminWeRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminTwRoute: AdminTwRoute,
-  AdminWeRoute: AdminWeRoute,
+  AdminWeRoute: AdminWeRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
 }
 
