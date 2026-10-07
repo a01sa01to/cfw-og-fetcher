@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "~/db/schema";
 import { weFavKey, weImgKey } from "./constants";
+import { optimizeImageBuffer } from "./image-optimization.server";
 
 const userAgent =
 	"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:158.0) Gecko/20100101 Firefox/158.0";
@@ -25,11 +26,6 @@ const parseHtmlEntities = async (url: string, response: Response) => {
 	};
 
 	const res = new HTMLRewriter()
-		.on("title", {
-			text(t) {
-				if (resp.title === url) resp.title = t.text || url;
-			},
-		})
 		.on("meta", {
 			element(el) {
 				const property = el.getAttribute("property");
@@ -67,9 +63,19 @@ const parseHtmlEntities = async (url: string, response: Response) => {
 					resp.favicon = href ?? defaultFavicon;
 			},
 		})
-		.transform(response);
+		.transform(response.clone());
 
 	await res.text();
+
+	// もし og:title がなかったら title タグから取得する
+	if (resp.title === url) {
+		const htmlText = await response.text();
+		const $ = cheerio.load(htmlText);
+		const titleTag = $("title").first();
+		if (titleTag.length > 0) {
+			resp.title = titleTag.text() || url;
+		}
+	}
 
 	if (resp.image?.startsWith("/"))
 		resp.image = new URL(resp.image, urlObj.origin).toString();
@@ -115,7 +121,7 @@ export const ogCrawler = async (hash: string) => {
 
 		if (!response.ok) return; // Memo: finally は early return しても実行される
 
-		const parsed = await parseHtmlEntities(item.url, response);
+		const parsed = await parseHtmlEntities(item.url, response.clone());
 		res.title = parsed.title;
 		res.description = parsed.description;
 
@@ -127,10 +133,16 @@ export const ogCrawler = async (hash: string) => {
 			});
 			if (imgRes.ok) {
 				const key = weImgKey(hash);
-				await env.OG_BUCKET.put(key, imgRes.body, {
-					onlyIf: imgRes.headers,
-					httpMetadata: imgRes.headers,
-				});
+				const buf = await imgRes.arrayBuffer();
+				// Twitter, Facebook などは 1200x628 なので ÷4 して 300x157 にする
+				const opt = await optimizeImageBuffer(new Uint8Array(buf), 300, 157);
+				if (opt) {
+					await env.OG_BUCKET.put(key, opt.data, {
+						httpMetadata: {
+							contentType: opt.contentType,
+						},
+					});
+				}
 			}
 		}
 		{
@@ -141,10 +153,15 @@ export const ogCrawler = async (hash: string) => {
 			});
 			if (favRes.ok) {
 				const key = weFavKey(hash);
-				await env.OG_BUCKET.put(key, favRes.body, {
-					onlyIf: favRes.headers,
-					httpMetadata: favRes.headers,
-				});
+				const buf = await favRes.arrayBuffer();
+				const opt = await optimizeImageBuffer(new Uint8Array(buf), 32, 32);
+				if (opt) {
+					await env.OG_BUCKET.put(key, opt.data, {
+						httpMetadata: {
+							contentType: opt.contentType,
+						},
+					});
+				}
 			}
 		}
 	} catch (err) {
