@@ -26,8 +26,7 @@ function RouteComponent() {
 	const navigate = useNavigate();
 
 	const mutation = useMutation({
-		mutationFn: (variables: { url: string }) =>
-			createDataFn({ data: variables }),
+		mutationFn: (url: string) => createDataFn({ data: url }),
 		onError: (error) => {
 			console.error("Mutation failed:", error);
 			toast.push({
@@ -59,7 +58,7 @@ function RouteComponent() {
 		e.preventDefault();
 		const formData = new FormData(e.currentTarget);
 		const url = formData.get("url");
-		if (typeof url === "string") mutation.mutate({ url });
+		if (typeof url === "string") mutation.mutate(url);
 	};
 
 	return (
