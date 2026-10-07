@@ -15,6 +15,7 @@ import { Route as AdminTwRouteImport } from './routes/admin/tw'
 import { Route as AdminWeRouteImport } from './routes/admin/we'
 import { Route as AdminWeHashRouteImport } from './routes/admin/we.$hash'
 import { Route as AdminWeNewRouteImport } from './routes/admin/we.new'
+import { Route as ApiWeHashRouteImport } from './routes/api/we.$hash'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
@@ -46,6 +47,11 @@ const AdminWeNewRoute = AdminWeNewRouteImport.update({
   path: '/new',
   getParentRoute: () => AdminWeRoute,
 } as any)
+const ApiWeHashRoute = ApiWeHashRouteImport.update({
+  id: '/api/we/$hash',
+  path: '/api/we/$hash',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/we/$hash': typeof AdminWeHashRoute
   '/admin/we/new': typeof AdminWeNewRoute
+  '/api/we/$hash': typeof ApiWeHashRoute
 }
 export interface FileRoutesByTo {
   '/admin/tw': typeof AdminTwRoute
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/we/$hash': typeof AdminWeHashRoute
   '/admin/we/new': typeof AdminWeNewRoute
+  '/api/we/$hash': typeof ApiWeHashRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/we/$hash': typeof AdminWeHashRoute
   '/admin/we/new': typeof AdminWeNewRoute
+  '/api/we/$hash': typeof ApiWeHashRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -80,8 +89,15 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/we/$hash'
     | '/admin/we/new'
+    | '/api/we/$hash'
   fileRoutesByTo: FileRoutesByTo
-  to: '/admin/tw' | '/admin/we' | '/admin' | '/admin/we/$hash' | '/admin/we/new'
+  to:
+    | '/admin/tw'
+    | '/admin/we'
+    | '/admin'
+    | '/admin/we/$hash'
+    | '/admin/we/new'
+    | '/api/we/$hash'
   id:
     | '__root__'
     | '/admin'
@@ -90,10 +106,12 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/we/$hash'
     | '/admin/we/new'
+    | '/api/we/$hash'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
+  ApiWeHashRoute: typeof ApiWeHashRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -140,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWeNewRouteImport
       parentRoute: typeof AdminWeRoute
     }
+    '/api/we/$hash': {
+      id: '/api/we/$hash'
+      path: '/api/we/$hash'
+      fullPath: '/api/we/$hash'
+      preLoaderRoute: typeof ApiWeHashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -172,6 +197,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
+  ApiWeHashRoute: ApiWeHashRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
