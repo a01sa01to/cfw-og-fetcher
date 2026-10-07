@@ -14,8 +14,6 @@ export const og = sqliteTable(
 		url: text("url").notNull(),
 		title: text("title"),
 		description: text("description"),
-		image: text("image"),
-		favicon: text("favicon"),
 		createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 		fetchedAt: integer("fetched_at", { mode: "timestamp" }),
 		lastReference: integer("last_reference", { mode: "timestamp" }),

@@ -31,8 +31,6 @@ export const Route = createFileRoute("/api/we/$hash")({
 						url: true,
 						title: true,
 						description: true,
-						image: true,
-						favicon: true,
 					},
 				})) satisfies OgApiResponse | undefined;
 

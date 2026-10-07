@@ -74,21 +74,6 @@ function RouteComponent() {
 		);
 	}
 
-	if (data.fetchedAt === null) {
-		return (
-			<Card>
-				<H2>Edit</H2>
-				<p>Hash: {data.hash}</p>
-				<p>URL: {data.url}</p>
-				<p>Created At: {new Date(data.createdAt).toLocaleString()}</p>
-				<p>Note: not crawled yet.</p>
-				<Button onClick={handleDelete} variant="outline" size="large">
-					Delete
-				</Button>
-			</Card>
-		);
-	}
-
 	return (
 		<Card>
 			<H2>Edit</H2>
@@ -96,10 +81,11 @@ function RouteComponent() {
 			<p>URL: {data.url}</p>
 			<p>Title: {data.title ?? "-"}</p>
 			<p>Description: {data.description ?? "-"}</p>
-			<p>Image: {data.image ?? "-"}</p>
-			<p>Favicon: {data.favicon ?? "-"}</p>
 			<p>Created At: {new Date(data.createdAt).toLocaleString()}</p>
-			<p>Fetched At: {new Date(data.fetchedAt).toLocaleString()}</p>
+			<p>
+				Fetched At:{" "}
+				{data.fetchedAt ? new Date(data.fetchedAt).toLocaleString() : "-"}
+			</p>
 			<p>
 				Last Reference:{" "}
 				{data.lastReference
