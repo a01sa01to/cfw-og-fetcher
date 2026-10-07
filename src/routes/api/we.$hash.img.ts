@@ -2,6 +2,7 @@ import { env } from "cloudflare:workers";
 import { createFileRoute } from "@tanstack/react-router";
 import * as v from "valibot";
 import { hashSchema } from "~/schema";
+import { weImgKey } from "~/utils/constants";
 
 export const Route = createFileRoute("/api/we/$hash/img")({
 	server: {
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/api/we/$hash/img")({
 					return new Response("Invalid hash format", { status: 400, headers });
 				}
 
-				const key = `we/img/${hash}.webp`;
+				const key = weImgKey(hash);
 				const obj = await env.OG_BUCKET.get(key, {
 					onlyIf: request.headers,
 					range: request.headers,

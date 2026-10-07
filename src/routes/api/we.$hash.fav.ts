@@ -2,6 +2,7 @@ import { env } from "cloudflare:workers";
 import { createFileRoute } from "@tanstack/react-router";
 import * as v from "valibot";
 import { hashSchema } from "~/schema";
+import { weFavKey } from "~/utils/constants";
 
 export const Route = createFileRoute("/api/we/$hash/fav")({
 	server: {
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/api/we/$hash/fav")({
 					return new Response("Invalid hash format", { status: 400, headers });
 				}
 
-				const key = `we/fav/${hash}.webp`;
+				const key = weFavKey(hash);
 				const obj = await env.OG_BUCKET.get(key, {
 					onlyIf: request.headers,
 					range: request.headers,
