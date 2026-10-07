@@ -53,7 +53,7 @@ export const Route = createFileRoute("/api/we/$hash")({
 
 				return Response.json(item, { status: 200, headers });
 			},
-			OPTIONS: async () => {
+			OPTIONS: () => {
 				const headers = new Headers();
 				headers.set("Access-Control-Allow-Origin", "*");
 				headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
@@ -62,6 +62,14 @@ export const Route = createFileRoute("/api/we/$hash")({
 
 				return new Response(null, {
 					status: 204,
+					headers,
+				});
+			},
+			ANY: () => {
+				const headers = new Headers();
+				headers.set("Access-Control-Allow-Origin", "*");
+				return new Response("Method Not Allowed", {
+					status: 405,
 					headers,
 				});
 			},

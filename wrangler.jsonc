@@ -12,5 +12,9 @@
     "database_name": "og-data",
     "database_id": "31a4e50f-c519-40ac-93cf-348129e41179",
     "migrations_dir": "drizzle"
+  }],
+  "r2_buckets": [{
+    "binding": "OG_BUCKET",
+    "bucket_name": "og-img"
   }]
 }

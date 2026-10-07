@@ -16,6 +16,8 @@ import { Route as AdminWeRouteImport } from './routes/admin/we'
 import { Route as AdminWeHashRouteImport } from './routes/admin/we.$hash'
 import { Route as AdminWeNewRouteImport } from './routes/admin/we.new'
 import { Route as ApiWeHashRouteImport } from './routes/api/we.$hash'
+import { Route as ApiWeHashFavRouteImport } from './routes/api/we.$hash.fav'
+import { Route as ApiWeHashImgRouteImport } from './routes/api/we.$hash.img'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
@@ -52,6 +54,16 @@ const ApiWeHashRoute = ApiWeHashRouteImport.update({
   path: '/api/we/$hash',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWeHashFavRoute = ApiWeHashFavRouteImport.update({
+  id: '/fav',
+  path: '/fav',
+  getParentRoute: () => ApiWeHashRoute,
+} as any)
+const ApiWeHashImgRoute = ApiWeHashImgRouteImport.update({
+  id: '/img',
+  path: '/img',
+  getParentRoute: () => ApiWeHashRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
@@ -60,7 +72,9 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/we/$hash': typeof AdminWeHashRoute
   '/admin/we/new': typeof AdminWeNewRoute
-  '/api/we/$hash': typeof ApiWeHashRoute
+  '/api/we/$hash': typeof ApiWeHashRouteWithChildren
+  '/api/we/$hash/fav': typeof ApiWeHashFavRoute
+  '/api/we/$hash/img': typeof ApiWeHashImgRoute
 }
 export interface FileRoutesByTo {
   '/admin/tw': typeof AdminTwRoute
@@ -68,7 +82,9 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/we/$hash': typeof AdminWeHashRoute
   '/admin/we/new': typeof AdminWeNewRoute
-  '/api/we/$hash': typeof ApiWeHashRoute
+  '/api/we/$hash': typeof ApiWeHashRouteWithChildren
+  '/api/we/$hash/fav': typeof ApiWeHashFavRoute
+  '/api/we/$hash/img': typeof ApiWeHashImgRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -78,7 +94,9 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/we/$hash': typeof AdminWeHashRoute
   '/admin/we/new': typeof AdminWeNewRoute
-  '/api/we/$hash': typeof ApiWeHashRoute
+  '/api/we/$hash': typeof ApiWeHashRouteWithChildren
+  '/api/we/$hash/fav': typeof ApiWeHashFavRoute
+  '/api/we/$hash/img': typeof ApiWeHashImgRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -90,6 +108,8 @@ export interface FileRouteTypes {
     | '/admin/we/$hash'
     | '/admin/we/new'
     | '/api/we/$hash'
+    | '/api/we/$hash/fav'
+    | '/api/we/$hash/img'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/admin/tw'
@@ -98,6 +118,8 @@ export interface FileRouteTypes {
     | '/admin/we/$hash'
     | '/admin/we/new'
     | '/api/we/$hash'
+    | '/api/we/$hash/fav'
+    | '/api/we/$hash/img'
   id:
     | '__root__'
     | '/admin'
@@ -107,11 +129,13 @@ export interface FileRouteTypes {
     | '/admin/we/$hash'
     | '/admin/we/new'
     | '/api/we/$hash'
+    | '/api/we/$hash/fav'
+    | '/api/we/$hash/img'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
-  ApiWeHashRoute: typeof ApiWeHashRoute
+  ApiWeHashRoute: typeof ApiWeHashRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -165,6 +189,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWeHashRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/we/$hash/fav': {
+      id: '/api/we/$hash/fav'
+      path: '/fav'
+      fullPath: '/api/we/$hash/fav'
+      preLoaderRoute: typeof ApiWeHashFavRouteImport
+      parentRoute: typeof ApiWeHashRoute
+    }
+    '/api/we/$hash/img': {
+      id: '/api/we/$hash/img'
+      path: '/img'
+      fullPath: '/api/we/$hash/img'
+      preLoaderRoute: typeof ApiWeHashImgRouteImport
+      parentRoute: typeof ApiWeHashRoute
+    }
   }
 }
 
@@ -195,9 +233,23 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface ApiWeHashRouteChildren {
+  ApiWeHashFavRoute: typeof ApiWeHashFavRoute
+  ApiWeHashImgRoute: typeof ApiWeHashImgRoute
+}
+
+const ApiWeHashRouteChildren: ApiWeHashRouteChildren = {
+  ApiWeHashFavRoute: ApiWeHashFavRoute,
+  ApiWeHashImgRoute: ApiWeHashImgRoute,
+}
+
+const ApiWeHashRouteWithChildren = ApiWeHashRoute._addFileChildren(
+  ApiWeHashRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
-  ApiWeHashRoute: ApiWeHashRoute,
+  ApiWeHashRoute: ApiWeHashRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
