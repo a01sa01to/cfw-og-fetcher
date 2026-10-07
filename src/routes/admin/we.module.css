@@ -1,0 +1,62 @@
+.cell {
+	min-width: 10rem;
+}
+
+.edithash {
+	word-break: break-all;
+}
+
+.link {
+	word-break: break-all;
+}
+
+.linkcard {
+	max-width: 100%;
+}
+
+.faviconContainer {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	grid-template-rows: auto auto;
+	gap: 0.5rem;
+	margin: 1rem auto;
+}
+
+.faviconImage {
+	grid-area: 1 / 1 / 2 / 2;
+	width: 2rem;
+	height: 2rem;
+}
+
+.favlink {
+	word-break: break-all;
+	grid-area: 1 / 2 / 3 / 3;
+}
+
+.previewImage {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 300 / 157;
+}
+
+.title {
+	margin: 0.5rem;
+	/* Std-22B-150 */
+	font-size: calc(22 / 16 * 1rem);
+	line-height: 1.5;
+	letter-spacing: 0.02em;
+	font-weight: 700;
+}
+
+.description {
+	margin: 0.5rem;
+}
+
+.details {
+	margin: 1rem auto;
+}
+
+.actions {
+	display: flex;
+	gap: 1rem;
+}

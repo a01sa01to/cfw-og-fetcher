@@ -1,8 +1,9 @@
 import { ButtonLink, H1, Table, UtilLink } from "@a01sa01to/ui";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { getAllData, getAllData$$key } from "./-we.functions";
+import styles from "./we.module.css";
 
 const QueryOptions = () =>
 	queryOptions({
@@ -21,10 +22,20 @@ export const Route = createFileRoute("/admin/we")({
 
 function RouteComponent() {
 	const { data } = useSuspenseQuery(QueryOptions());
+	const location = useLocation();
+	const isTop =
+		location.pathname === "/admin/we" || location.pathname === "/admin/we/";
 
 	return (
 		<>
-			<div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					gap: "2rem",
+					gridArea: isTop ? "1 / 1 / 1 / 3" : "1 / 1 / 1 / 2",
+				}}
+			>
 				<H1>Websites</H1>
 				<ButtonLink
 					href="/admin/we/new"
@@ -49,22 +60,26 @@ function RouteComponent() {
 					<tbody>
 						{data.map((item) => (
 							<tr key={item.hash}>
-								<td>
-									<UtilLink href={item.url}>{item.url}</UtilLink>
+								<td className={styles.cell}>
+									<UtilLink href={item.url} className={styles.link}>
+										{item.url}
+									</UtilLink>
 								</td>
-								<td>{item.title ?? "-"}</td>
-								<td>{new Date(item.createdAt).toLocaleString()}</td>
-								<td>
+								<td className={styles.cell}>{item.title ?? "-"}</td>
+								<td className={styles.cell}>
+									{new Date(item.createdAt).toLocaleString()}
+								</td>
+								<td className={styles.cell}>
 									{item.fetchedAt
 										? new Date(item.fetchedAt).toLocaleString()
 										: "-"}
 								</td>
-								<td>
+								<td className={styles.cell}>
 									{item.lastReference
 										? new Date(item.lastReference).toLocaleString()
 										: "-"}
 								</td>
-								<td>{item.lastCrawlStatus ?? "-"}</td>
+								<td className={styles.cell}>{item.lastCrawlStatus ?? "-"}</td>
 								<td>
 									<UtilLink href={`/admin/we/${item.hash}`}>Edit</UtilLink>
 								</td>

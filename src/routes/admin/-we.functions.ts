@@ -5,6 +5,7 @@ import { drizzle } from "drizzle-orm/d1";
 import * as v from "valibot";
 import * as schema from "~/db/schema";
 import { absUrlSchema, hashSchema } from "~/schema";
+import { weFavKey, weImgKey } from "~/utils/constants";
 import { generateHash } from "~/utils/hash";
 import { ogCrawler } from "~/utils/og-crawl.server";
 
@@ -76,14 +77,21 @@ export const deleteDataByHash = createServerFn({ method: "POST" })
 	.validator((data) => v.parse(hashSchema, data))
 	.handler(async ({ data }) => {
 		const db = drizzle(env.DB, { schema });
+
 		const result = await db
 			.delete(schema.og)
 			.where(eq(schema.og.hash, data))
 			.run();
+
 		if (!result.success) {
 			console.error("Delete failed:", result.error);
 			throw new Error(`Delete failed: ${result.error}`);
 		}
+
+		await env.OG_BUCKET.delete([weImgKey(data), weFavKey(data)]).catch(
+			console.error,
+		);
+
 		return { hash: data };
 	});
 

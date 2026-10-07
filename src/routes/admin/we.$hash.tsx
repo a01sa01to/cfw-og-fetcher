@@ -1,4 +1,4 @@
-import { Button, H2, toast } from "@a01sa01to/ui";
+import { Button, H2, Link, toast, Ul } from "@a01sa01to/ui";
 import {
 	queryOptions,
 	useMutation,
@@ -8,6 +8,7 @@ import {
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import Card from "~/components/Card";
+import Image from "~/components/Image";
 import {
 	deleteDataByHash,
 	fetchDataByHash,
@@ -15,6 +16,7 @@ import {
 	getDataByHash,
 	getDataByHash$$key,
 } from "./-we.functions";
+import styles from "./we.module.css";
 
 const QueryOptions = (hash: string) =>
 	queryOptions({
@@ -93,7 +95,10 @@ function RouteComponent() {
 		return (
 			<Card>
 				<H2>Edit</H2>
-				<p>Not found: {hash}</p>
+				<p>
+					<code className={styles.edithash}>{hash}</code>
+				</p>
+				<p>Not found</p>
 				<Button onClick={handleDelete} variant="outline" size="large">
 					Delete
 				</Button>
@@ -104,23 +109,60 @@ function RouteComponent() {
 	return (
 		<Card>
 			<H2>Edit</H2>
-			<p>Hash: {data.hash}</p>
-			<p>URL: {data.url}</p>
-			<p>Title: {data.title ?? "-"}</p>
-			<p>Description: {data.description ?? "-"}</p>
-			<p>Created At: {new Date(data.createdAt).toLocaleString()}</p>
 			<p>
-				Fetched At:{" "}
-				{data.fetchedAt ? new Date(data.fetchedAt).toLocaleString() : "-"}
+				<code className={styles.edithash}>{data.hash}</code>
 			</p>
-			<p>
-				Last Reference:{" "}
-				{data.lastReference
-					? new Date(data.lastReference).toLocaleString()
-					: "-"}
-			</p>
-			<p>Last Crawl Status: {data.lastCrawlStatus ?? "-"}</p>
-			<div style={{ display: "flex", gap: "1rem" }}>
+			<div className={styles.faviconContainer}>
+				<Image
+					src={`/api/we/${data.hash}/fav?t=${data.fetchedAt?.getTime() ?? 0}`}
+					alt="Favicon Preview"
+					className={styles.faviconImage}
+				/>
+				<Link href={data.url} className={styles.favlink}>
+					{data.url}
+				</Link>
+			</div>
+			<div className={styles.linkcard}>
+				<Image
+					src={`/api/we/${data.hash}/img?t=${data.fetchedAt?.getTime() ?? 0}`}
+					alt="Preview"
+					className={styles.previewImage}
+				/>
+				<p className={styles.title}>{data.title ?? "-"}</p>
+				<p className={styles.description}>{data.description ?? "-"}</p>
+			</div>
+			<Ul spacing="4" className={styles.details}>
+				<li>
+					<strong>Created At:</strong>{" "}
+					<time dateTime={data.createdAt.toISOString()}>
+						{new Date(data.createdAt).toLocaleString()}
+					</time>
+				</li>
+				<li>
+					<strong>Fetched At:</strong>{" "}
+					{data.fetchedAt ? (
+						<time dateTime={data.fetchedAt.toISOString()}>
+							{new Date(data.fetchedAt).toLocaleString()}
+						</time>
+					) : (
+						"-"
+					)}
+				</li>
+				<li>
+					<strong>Last Reference:</strong>{" "}
+					{data.lastReference ? (
+						<time dateTime={data.lastReference.toISOString()}>
+							{new Date(data.lastReference).toLocaleString()}
+						</time>
+					) : (
+						"-"
+					)}
+				</li>
+				<li>
+					<strong>Last Crawl Status:</strong> {data.lastCrawlStatus ?? "-"}
+				</li>
+			</Ul>
+			<div className={styles.actions}>
 				<Button
 					onClick={handleCrawl}
 					variant="solid-fill"

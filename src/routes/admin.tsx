@@ -49,7 +49,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body>
 				<Header />
 				<MainContainer>
-					<div style={{ display: "flex", gap: "4rem" }}>{children}</div>
+					<div
+						style={{
+							display: "grid",
+							gridTemplateColumns: "1fr 1fr",
+							gap: "2rem",
+						}}
+					>
+						{children}
+					</div>
 				</MainContainer>
 				<ToastContainer />
 				<TanStackDevtools
