@@ -1,4 +1,4 @@
-import { env, waitUntil } from "cloudflare:workers";
+import { env } from "cloudflare:workers";
 import * as cheerio from "cheerio";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
@@ -87,7 +87,7 @@ const parseHtmlEntities = async (url: string, response: Response) => {
 	return resp;
 };
 
-export const ogFetcher = async (hash: string) => {
+export const ogCrawler = async (hash: string) => {
 	const db = drizzle(env.DB, { schema });
 
 	const item = await db.query.og.findFirst({
@@ -151,13 +151,12 @@ export const ogFetcher = async (hash: string) => {
 		console.error(err);
 		res.lastCrawlStatus = -1;
 	} finally {
-		waitUntil(
-			db
-				.update(schema.og)
-				.set(res)
-				.where(eq(schema.og.hash, hash))
-				.run()
-				.catch(console.error),
-		);
+		await db
+			.update(schema.og)
+			.set(res)
+			.where(eq(schema.og.hash, hash))
+			.run()
+			.catch(console.error);
+		console.log("OG data fetch completed:", item.url, res);
 	}
 };

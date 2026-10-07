@@ -56,6 +56,7 @@ function RouteComponent() {
 
 	const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		if (mutation.isPending) return;
 		const formData = new FormData(e.currentTarget);
 		const url = formData.get("url");
 		if (typeof url === "string") mutation.mutate(url);

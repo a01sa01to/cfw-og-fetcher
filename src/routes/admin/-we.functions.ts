@@ -6,6 +6,7 @@ import * as v from "valibot";
 import * as schema from "~/db/schema";
 import { absUrlSchema, hashSchema } from "~/schema";
 import { generateHash } from "~/utils/hash";
+import { ogCrawler } from "~/utils/og-crawl.server";
 
 export const getAllData = createServerFn().handler(async () => {
 	const db = drizzle(env.DB, { schema });
@@ -59,8 +60,6 @@ export const createNewData = createServerFn({ method: "POST" })
 			url,
 			title: null,
 			description: null,
-			image: null,
-			favicon: null,
 			createdAt: now,
 			fetchedAt: null,
 			lastReference: null,
@@ -86,4 +85,10 @@ export const deleteDataByHash = createServerFn({ method: "POST" })
 			throw new Error(`Delete failed: ${result.error}`);
 		}
 		return { hash: data };
+	});
+
+export const fetchDataByHash = createServerFn()
+	.validator((data) => v.parse(hashSchema, data))
+	.handler(async ({ data }) => {
+		await ogCrawler(data);
 	});

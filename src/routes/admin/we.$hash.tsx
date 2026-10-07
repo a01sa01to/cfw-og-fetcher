@@ -10,6 +10,7 @@ import { useServerFn } from "@tanstack/react-start";
 import Card from "~/components/Card";
 import {
 	deleteDataByHash,
+	fetchDataByHash,
 	getAllData$$key,
 	getDataByHash,
 	getDataByHash$$key,
@@ -35,9 +36,10 @@ function RouteComponent() {
 	const { data } = useSuspenseQuery(QueryOptions(hash));
 	const queryClient = useQueryClient();
 	const deleteDataFn = useServerFn(deleteDataByHash);
+	const fetchDataFn = useServerFn(fetchDataByHash);
 	const navigate = useNavigate();
 
-	const mutation = useMutation({
+	const deleteMutation = useMutation({
 		mutationFn: (hash: string) => deleteDataFn({ data: hash }),
 		onError: (error) => {
 			console.error("Delete failed:", error);
@@ -58,8 +60,33 @@ function RouteComponent() {
 		},
 	});
 
+	const crawlMutation = useMutation({
+		mutationFn: (hash: string) => fetchDataFn({ data: hash }),
+		onError: (error) => {
+			console.error("Crawl failed:", error);
+			toast.push({
+				type: "error",
+				title: "Error",
+				description: error.message,
+			});
+		},
+		onSuccess: () => {
+			toast.push({
+				type: "success",
+				title: "Crawled",
+			});
+			queryClient.invalidateQueries(QueryOptions(hash));
+			queryClient.invalidateQueries({ queryKey: getAllData$$key() });
+		},
+	});
+
 	const handleDelete = () => {
-		if (confirm("Are you sure?")) mutation.mutate(hash);
+		if (confirm("Are you sure?")) deleteMutation.mutate(hash);
+	};
+
+	const handleCrawl = () => {
+		if (crawlMutation.isPending) return;
+		crawlMutation.mutate(hash);
 	};
 
 	if (!data) {
@@ -93,9 +120,19 @@ function RouteComponent() {
 					: "-"}
 			</p>
 			<p>Last Crawl Status: {data.lastCrawlStatus ?? "-"}</p>
-			<Button onClick={handleDelete} variant="outline" size="large">
-				Delete
-			</Button>
+			<div style={{ display: "flex", gap: "1rem" }}>
+				<Button
+					onClick={handleCrawl}
+					variant="solid-fill"
+					size="large"
+					aria-disabled={crawlMutation.isPending}
+				>
+					{crawlMutation.isPending ? "Crawling..." : "Crawl Now"}
+				</Button>
+				<Button onClick={handleDelete} variant="outline" size="large">
+					Delete
+				</Button>
+			</div>
 		</Card>
 	);
 }
