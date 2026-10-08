@@ -14,6 +14,7 @@ const QueryOptions = () =>
 	queryOptions({
 		queryKey: getAllData$$key(),
 		queryFn: () => getAllData(),
+		refetchInterval: 1000 * 60, // 1 minute
 	});
 
 export const Route = createFileRoute("/admin/we/new")({

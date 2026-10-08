@@ -18,3 +18,18 @@ export const OgApiResponseSchema = v.object({
 });
 
 export type OgApiResponse = v.InferOutput<typeof OgApiResponseSchema>;
+
+export const QueueMessageSchema = v.union([
+	v.object({
+		type: v.literal("fetch"),
+		hash: hashSchema,
+	}),
+	v.object({
+		type: v.literal("img-opt"),
+		hash: hashSchema,
+		width: v.number(),
+		height: v.number(),
+	}),
+]);
+
+export type QueueMessage = v.InferOutput<typeof QueueMessageSchema>;

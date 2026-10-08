@@ -22,15 +22,13 @@ const QueryOptions = (hash: string) =>
 	queryOptions({
 		queryKey: getDataByHash$$key(hash),
 		queryFn: () => getDataByHash({ data: hash }),
+		refetchInterval: 1000 * 60, // 1 minute
 	});
 
 export const Route = createFileRoute("/admin/we/$hash")({
 	component: RouteComponent,
 	loader: ({ context, params }) =>
-		context.queryClient.query({
-			...QueryOptions(params.hash),
-			staleTime: "static",
-		}),
+		context.queryClient.query(QueryOptions(params.hash)),
 });
 
 function RouteComponent() {
@@ -65,7 +63,7 @@ function RouteComponent() {
 	const crawlMutation = useMutation({
 		mutationFn: (hash: string) => fetchDataFn({ data: hash }),
 		onError: (error) => {
-			console.error("Crawl failed:", error);
+			console.error("Enqueue failed:", error);
 			toast.push({
 				type: "error",
 				title: "Error",
@@ -75,10 +73,8 @@ function RouteComponent() {
 		onSuccess: () => {
 			toast.push({
 				type: "success",
-				title: "Crawled",
+				title: "Enqueued for crawling",
 			});
-			queryClient.invalidateQueries(QueryOptions(hash));
-			queryClient.invalidateQueries({ queryKey: getAllData$$key() });
 		},
 	});
 
@@ -169,7 +165,7 @@ function RouteComponent() {
 					size="large"
 					aria-disabled={crawlMutation.isPending}
 				>
-					{crawlMutation.isPending ? "Crawling..." : "Crawl Now"}
+					{crawlMutation.isPending ? "Enqueuing..." : "Crawl Enqueue"}
 				</Button>
 				<Button onClick={handleDelete} variant="outline" size="large">
 					Delete

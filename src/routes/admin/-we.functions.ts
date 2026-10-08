@@ -4,10 +4,9 @@ import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import * as v from "valibot";
 import * as schema from "~/db/schema";
-import { absUrlSchema, hashSchema } from "~/schema";
+import { absUrlSchema, hashSchema, type QueueMessage } from "~/schema";
 import { weFavKey, weImgKey } from "~/utils/constants";
 import { generateHash } from "~/utils/hash";
-import { ogCrawler } from "~/utils/og-crawl.server";
 
 export const getAllData = createServerFn().handler(async () => {
 	const db = drizzle(env.DB, { schema });
@@ -98,5 +97,6 @@ export const deleteDataByHash = createServerFn({ method: "POST" })
 export const fetchDataByHash = createServerFn()
 	.validator((data) => v.parse(hashSchema, data))
 	.handler(async ({ data }) => {
-		await ogCrawler(data);
+		const que = env.OG_QUEUE as Queue<QueueMessage>;
+		await que.send({ type: "fetch", hash: data }).catch(console.error);
 	});
