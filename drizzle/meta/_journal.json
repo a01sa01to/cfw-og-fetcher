@@ -15,6 +15,13 @@
       "when": 1791369081350,
       "tag": "0001_clean_tombstone",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1791471603533,
+      "tag": "0002_silly_champions",
+      "breakpoints": true
     }
   ]
 }

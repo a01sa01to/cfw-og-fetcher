@@ -14,6 +14,7 @@ export default function Image(props: ComponentPropsWithRef<"img">) {
 	if (iserr) {
 		return (
 			<div
+				{...props}
 				className={props.className}
 				style={{
 					width: props.width,

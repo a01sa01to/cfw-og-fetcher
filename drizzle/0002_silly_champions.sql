@@ -1,0 +1,1 @@
+ALTER TABLE `og` ADD `image_width` integer;

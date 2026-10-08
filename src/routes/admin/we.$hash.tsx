@@ -78,6 +78,10 @@ function RouteComponent() {
 		},
 	});
 
+	const imgSizes = new Array(Math.ceil((data?.originalImageWidth ?? 0) / 300))
+		.fill(0)
+		.map((_, i) => (i + 1) * 300);
+
 	const handleDelete = () => {
 		if (confirm("Are you sure?")) deleteMutation.mutate(hash);
 	};
@@ -123,6 +127,19 @@ function RouteComponent() {
 					src={`/api/we/${data.hash}/img?t=${data.fetchedAt?.getTime() ?? 0}`}
 					alt="Preview"
 					className={styles.previewImage}
+					sizes="auto"
+					srcSet={
+						imgSizes
+							.map((size) => ({
+								src: `/api/we/${data.hash}/img/${size}?t=${data.fetchedAt?.getTime() ?? 0}`,
+								width: size,
+							}))
+							.map(({ src, width }) => `${src} ${width}w`)
+							.join(", ") +
+						((data?.originalImageWidth ?? 0) % 300 !== 0
+							? `, /api/we/${data.hash}/img?t=${data.fetchedAt?.getTime() ?? 0} ${data.originalImageWidth}w`
+							: "")
+					}
 				/>
 				<p className={styles.title}>{data.title ?? "-"}</p>
 				<p className={styles.description}>{data.description ?? "-"}</p>

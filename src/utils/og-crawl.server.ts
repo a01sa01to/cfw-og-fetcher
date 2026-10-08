@@ -3,7 +3,9 @@ import * as cheerio from "cheerio";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "~/db/schema";
+import type { QueueMessage } from "~/schema";
 import { weFavKey, weImgKey } from "./constants";
+import { imageSize, mimeType, supportedImageMimeTypes } from "./image.server";
 import { optimizeImageBuffer } from "./image-optimization.server";
 
 const userAgent =
@@ -110,6 +112,8 @@ export const ogCrawler = async (hash: string) => {
 		fetchedAt: new Date(),
 	};
 
+	const que = env.OG_QUEUE as Queue<QueueMessage>;
+
 	try {
 		const response = await fetch(item.url, {
 			headers: {
@@ -126,6 +130,7 @@ export const ogCrawler = async (hash: string) => {
 		res.description = parsed.description;
 
 		if (parsed.image) {
+			console.log("Fetching OG image:", parsed.image);
 			const imgRes = await fetch(parsed.image, {
 				headers: {
 					"User-Agent": userAgent,
@@ -134,18 +139,36 @@ export const ogCrawler = async (hash: string) => {
 			if (imgRes.ok) {
 				const key = weImgKey(hash);
 				const buf = await imgRes.arrayBuffer();
-				// Twitter, Facebook などは 1200x628 なので ÷4 して 300x157 にする
-				const opt = await optimizeImageBuffer(new Uint8Array(buf), 300, 157);
-				if (opt) {
-					await env.OG_BUCKET.put(key, opt.data, {
+				const u8buf = new Uint8Array(buf);
+				const mime = await mimeType(u8buf);
+
+				if (supportedImageMimeTypes.includes(mime ?? "")) {
+					const siz = imageSize(u8buf);
+					res.originalImageWidth = siz.width;
+
+					await env.OG_BUCKET.put(key, u8buf, {
 						httpMetadata: {
-							contentType: opt.contentType,
+							contentType: mime,
 						},
 					});
+
+					// Twitter, Facebook などは 1200x628 なので ÷4 して 300x157 から開始したい
+					for (let i = 300; i <= 1200; i += 300) {
+						if (i <= siz.width) {
+							await que.send({
+								type: "img-opt",
+								hash,
+								width: i,
+								height: Math.ceil((i / siz.width) * siz.height),
+							});
+							console.log("Enqueued image optimization for width:", i);
+						}
+					}
 				}
 			}
 		}
 		{
+			console.log("Fetching favicon:", parsed.favicon);
 			const favRes = await fetch(parsed.favicon, {
 				headers: {
 					"User-Agent": userAgent,
@@ -154,11 +177,20 @@ export const ogCrawler = async (hash: string) => {
 			if (favRes.ok) {
 				const key = weFavKey(hash);
 				const buf = await favRes.arrayBuffer();
-				const opt = await optimizeImageBuffer(new Uint8Array(buf), 32, 32);
-				if (opt) {
-					await env.OG_BUCKET.put(key, opt.data, {
+				try {
+					const opt = await optimizeImageBuffer(new Uint8Array(buf), 32, 32);
+					if (opt) {
+						await env.OG_BUCKET.put(key, opt.data, {
+							httpMetadata: {
+								contentType: opt.contentType,
+							},
+						});
+					}
+				} catch (err) {
+					console.error("Favicon optimization failed:", err);
+					await env.OG_BUCKET.put(key, new Uint8Array(buf), {
 						httpMetadata: {
-							contentType: opt.contentType,
+							contentType: await mimeType(new Uint8Array(buf)),
 						},
 					});
 				}

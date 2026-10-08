@@ -18,6 +18,7 @@ export const og = sqliteTable(
 		fetchedAt: integer("fetched_at", { mode: "timestamp" }),
 		lastReference: integer("last_reference", { mode: "timestamp" }),
 		lastCrawlStatus: integer("last_crawl_status"),
+		originalImageWidth: integer("image_width"),
 	},
 	(table) => [
 		uniqueIndex("uq_og_url").on(table.url),

@@ -15,6 +15,7 @@ export const OgApiResponseSchema = v.object({
 	url: absUrlSchema,
 	title: v.nullable(v.string()),
 	description: v.nullable(v.string()),
+	originalImageWidth: v.nullable(v.number()),
 });
 
 export type OgApiResponse = v.InferOutput<typeof OgApiResponseSchema>;

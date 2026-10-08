@@ -1,36 +1,12 @@
-import { detectXml } from "@file-type/xml";
-import { FileTypeParser } from "file-type";
-import imageSize from "image-size";
 import { optimizeImage } from "wasm-image-optimization";
-
-const fileTypeParser = new FileTypeParser({ customDetectors: [detectXml] });
+import { imageSize, mimeType } from "./image.server";
 
 export const optimizeImageBuffer = async (
 	buffer: Uint8Array,
 	outputWidth: number,
 	outputHeight: number,
 ) => {
-	const fileType = await fileTypeParser.fromBuffer(buffer);
-
-	if (!fileType) return null;
-	if (!fileType.mime.startsWith("image/")) return null;
-
-	// svg, jpeg, png, webp, avif のみ対応
-	// それ以外はそのままストリームで返す
-	if (
-		![
-			"image/svg+xml",
-			"image/jpeg",
-			"image/png",
-			"image/webp",
-			"image/avif",
-		].includes(fileType.mime)
-	) {
-		return {
-			data: buffer,
-			contentType: fileType.mime,
-		};
-	}
+	const fileType = await mimeType(buffer);
 
 	const dimension = imageSize(new Uint8Array(buffer));
 
@@ -46,9 +22,11 @@ export const optimizeImageBuffer = async (
 
 	// 拡大はしない (svg は viewBox が返されるらしいので例外)
 	const height =
-		fileType.ext === "svg" ? height2 : Math.min(dimension.height, height2);
+		fileType === "image/svg+xml"
+			? height2
+			: Math.min(dimension.height, height2);
 	const width =
-		fileType.ext === "svg" ? width2 : Math.min(dimension.width, width2);
+		fileType === "image/svg+xml" ? width2 : Math.min(dimension.width, width2);
 
 	const img = await optimizeImage({
 		format: "webp",
@@ -57,14 +35,6 @@ export const optimizeImageBuffer = async (
 		quality: 80,
 		width,
 	});
-
-	// うまくいかなかったら元の画像を返す
-	if (!img) {
-		return {
-			data: buffer,
-			contentType: fileType.mime,
-		};
-	}
 
 	return {
 		data: img.data,

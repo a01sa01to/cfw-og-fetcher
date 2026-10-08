@@ -18,6 +18,7 @@ import { Route as AdminWeNewRouteImport } from './routes/admin/we.new'
 import { Route as ApiWeHashRouteImport } from './routes/api/we.$hash'
 import { Route as ApiWeHashFavRouteImport } from './routes/api/we.$hash.fav'
 import { Route as ApiWeHashImgRouteImport } from './routes/api/we.$hash.img'
+import { Route as ApiWeHashImgWidthRouteImport } from './routes/api/we.$hash.img.$width'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
@@ -64,6 +65,11 @@ const ApiWeHashImgRoute = ApiWeHashImgRouteImport.update({
   path: '/img',
   getParentRoute: () => ApiWeHashRoute,
 } as any)
+const ApiWeHashImgWidthRoute = ApiWeHashImgWidthRouteImport.update({
+  id: '/$width',
+  path: '/$width',
+  getParentRoute: () => ApiWeHashImgRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
@@ -74,7 +80,8 @@ export interface FileRoutesByFullPath {
   '/admin/we/new': typeof AdminWeNewRoute
   '/api/we/$hash': typeof ApiWeHashRouteWithChildren
   '/api/we/$hash/fav': typeof ApiWeHashFavRoute
-  '/api/we/$hash/img': typeof ApiWeHashImgRoute
+  '/api/we/$hash/img': typeof ApiWeHashImgRouteWithChildren
+  '/api/we/$hash/img/$width': typeof ApiWeHashImgWidthRoute
 }
 export interface FileRoutesByTo {
   '/admin/tw': typeof AdminTwRoute
@@ -84,7 +91,8 @@ export interface FileRoutesByTo {
   '/admin/we/new': typeof AdminWeNewRoute
   '/api/we/$hash': typeof ApiWeHashRouteWithChildren
   '/api/we/$hash/fav': typeof ApiWeHashFavRoute
-  '/api/we/$hash/img': typeof ApiWeHashImgRoute
+  '/api/we/$hash/img': typeof ApiWeHashImgRouteWithChildren
+  '/api/we/$hash/img/$width': typeof ApiWeHashImgWidthRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,7 +104,8 @@ export interface FileRoutesById {
   '/admin/we/new': typeof AdminWeNewRoute
   '/api/we/$hash': typeof ApiWeHashRouteWithChildren
   '/api/we/$hash/fav': typeof ApiWeHashFavRoute
-  '/api/we/$hash/img': typeof ApiWeHashImgRoute
+  '/api/we/$hash/img': typeof ApiWeHashImgRouteWithChildren
+  '/api/we/$hash/img/$width': typeof ApiWeHashImgWidthRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/api/we/$hash'
     | '/api/we/$hash/fav'
     | '/api/we/$hash/img'
+    | '/api/we/$hash/img/$width'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/admin/tw'
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/api/we/$hash'
     | '/api/we/$hash/fav'
     | '/api/we/$hash/img'
+    | '/api/we/$hash/img/$width'
   id:
     | '__root__'
     | '/admin'
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/api/we/$hash'
     | '/api/we/$hash/fav'
     | '/api/we/$hash/img'
+    | '/api/we/$hash/img/$width'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -203,6 +215,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWeHashImgRouteImport
       parentRoute: typeof ApiWeHashRoute
     }
+    '/api/we/$hash/img/$width': {
+      id: '/api/we/$hash/img/$width'
+      path: '/$width'
+      fullPath: '/api/we/$hash/img/$width'
+      preLoaderRoute: typeof ApiWeHashImgWidthRouteImport
+      parentRoute: typeof ApiWeHashImgRoute
+    }
   }
 }
 
@@ -233,14 +252,26 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface ApiWeHashImgRouteChildren {
+  ApiWeHashImgWidthRoute: typeof ApiWeHashImgWidthRoute
+}
+
+const ApiWeHashImgRouteChildren: ApiWeHashImgRouteChildren = {
+  ApiWeHashImgWidthRoute: ApiWeHashImgWidthRoute,
+}
+
+const ApiWeHashImgRouteWithChildren = ApiWeHashImgRoute._addFileChildren(
+  ApiWeHashImgRouteChildren,
+)
+
 interface ApiWeHashRouteChildren {
   ApiWeHashFavRoute: typeof ApiWeHashFavRoute
-  ApiWeHashImgRoute: typeof ApiWeHashImgRoute
+  ApiWeHashImgRoute: typeof ApiWeHashImgRouteWithChildren
 }
 
 const ApiWeHashRouteChildren: ApiWeHashRouteChildren = {
   ApiWeHashFavRoute: ApiWeHashFavRoute,
-  ApiWeHashImgRoute: ApiWeHashImgRoute,
+  ApiWeHashImgRoute: ApiWeHashImgRouteWithChildren,
 }
 
 const ApiWeHashRouteWithChildren = ApiWeHashRoute._addFileChildren(
