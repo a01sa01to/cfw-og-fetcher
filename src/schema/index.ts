@@ -5,6 +5,11 @@ export const hashSchema = v.pipe(
 	v.regex(/^[a-f0-9]{64}$/, "Invalid hash format"),
 );
 
+export const tweetIdSchema = v.pipe(
+	v.string(),
+	v.regex(/^\d+$/, "Invalid tweet ID format"),
+);
+
 export const absUrlSchema = v.pipe(
 	v.string(),
 	v.url(),
@@ -30,6 +35,10 @@ export const QueueMessageSchema = v.union([
 		hash: hashSchema,
 		width: v.number(),
 		height: v.number(),
+	}),
+	v.object({
+		type: v.literal("tweet-fetch"),
+		id: tweetIdSchema,
 	}),
 ]);
 

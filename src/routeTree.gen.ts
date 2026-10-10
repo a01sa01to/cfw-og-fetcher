@@ -13,8 +13,11 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminTwRouteImport } from './routes/admin/tw'
 import { Route as AdminWeRouteImport } from './routes/admin/we'
+import { Route as AdminTwIdRouteImport } from './routes/admin/tw.$id'
+import { Route as AdminTwNewRouteImport } from './routes/admin/tw.new'
 import { Route as AdminWeHashRouteImport } from './routes/admin/we.$hash'
 import { Route as AdminWeNewRouteImport } from './routes/admin/we.new'
+import { Route as ApiTwIdRouteImport } from './routes/api/tw.$id'
 import { Route as ApiWeHashRouteImport } from './routes/api/we.$hash'
 import { Route as ApiWeHashFavRouteImport } from './routes/api/we.$hash.fav'
 import { Route as ApiWeHashImgRouteImport } from './routes/api/we.$hash.img'
@@ -40,6 +43,16 @@ const AdminWeRoute = AdminWeRouteImport.update({
   path: '/we',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminTwIdRoute = AdminTwIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminTwRoute,
+} as any)
+const AdminTwNewRoute = AdminTwNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminTwRoute,
+} as any)
 const AdminWeHashRoute = AdminWeHashRouteImport.update({
   id: '/$hash',
   path: '/$hash',
@@ -49,6 +62,11 @@ const AdminWeNewRoute = AdminWeNewRouteImport.update({
   id: '/new',
   path: '/new',
   getParentRoute: () => AdminWeRoute,
+} as any)
+const ApiTwIdRoute = ApiTwIdRouteImport.update({
+  id: '/api/tw/$id',
+  path: '/api/tw/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiWeHashRoute = ApiWeHashRouteImport.update({
   id: '/api/we/$hash',
@@ -73,22 +91,28 @@ const ApiWeHashImgWidthRoute = ApiWeHashImgWidthRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
-  '/admin/tw': typeof AdminTwRoute
+  '/admin/tw': typeof AdminTwRouteWithChildren
   '/admin/we': typeof AdminWeRouteWithChildren
   '/admin/': typeof AdminIndexRoute
+  '/admin/tw/$id': typeof AdminTwIdRoute
+  '/admin/tw/new': typeof AdminTwNewRoute
   '/admin/we/$hash': typeof AdminWeHashRoute
   '/admin/we/new': typeof AdminWeNewRoute
+  '/api/tw/$id': typeof ApiTwIdRoute
   '/api/we/$hash': typeof ApiWeHashRouteWithChildren
   '/api/we/$hash/fav': typeof ApiWeHashFavRoute
   '/api/we/$hash/img': typeof ApiWeHashImgRouteWithChildren
   '/api/we/$hash/img/$width': typeof ApiWeHashImgWidthRoute
 }
 export interface FileRoutesByTo {
-  '/admin/tw': typeof AdminTwRoute
+  '/admin/tw': typeof AdminTwRouteWithChildren
   '/admin/we': typeof AdminWeRouteWithChildren
   '/admin': typeof AdminIndexRoute
+  '/admin/tw/$id': typeof AdminTwIdRoute
+  '/admin/tw/new': typeof AdminTwNewRoute
   '/admin/we/$hash': typeof AdminWeHashRoute
   '/admin/we/new': typeof AdminWeNewRoute
+  '/api/tw/$id': typeof ApiTwIdRoute
   '/api/we/$hash': typeof ApiWeHashRouteWithChildren
   '/api/we/$hash/fav': typeof ApiWeHashFavRoute
   '/api/we/$hash/img': typeof ApiWeHashImgRouteWithChildren
@@ -97,11 +121,14 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/admin': typeof AdminRouteWithChildren
-  '/admin/tw': typeof AdminTwRoute
+  '/admin/tw': typeof AdminTwRouteWithChildren
   '/admin/we': typeof AdminWeRouteWithChildren
   '/admin/': typeof AdminIndexRoute
+  '/admin/tw/$id': typeof AdminTwIdRoute
+  '/admin/tw/new': typeof AdminTwNewRoute
   '/admin/we/$hash': typeof AdminWeHashRoute
   '/admin/we/new': typeof AdminWeNewRoute
+  '/api/tw/$id': typeof ApiTwIdRoute
   '/api/we/$hash': typeof ApiWeHashRouteWithChildren
   '/api/we/$hash/fav': typeof ApiWeHashFavRoute
   '/api/we/$hash/img': typeof ApiWeHashImgRouteWithChildren
@@ -114,8 +141,11 @@ export interface FileRouteTypes {
     | '/admin/tw'
     | '/admin/we'
     | '/admin/'
+    | '/admin/tw/$id'
+    | '/admin/tw/new'
     | '/admin/we/$hash'
     | '/admin/we/new'
+    | '/api/tw/$id'
     | '/api/we/$hash'
     | '/api/we/$hash/fav'
     | '/api/we/$hash/img'
@@ -125,8 +155,11 @@ export interface FileRouteTypes {
     | '/admin/tw'
     | '/admin/we'
     | '/admin'
+    | '/admin/tw/$id'
+    | '/admin/tw/new'
     | '/admin/we/$hash'
     | '/admin/we/new'
+    | '/api/tw/$id'
     | '/api/we/$hash'
     | '/api/we/$hash/fav'
     | '/api/we/$hash/img'
@@ -137,8 +170,11 @@ export interface FileRouteTypes {
     | '/admin/tw'
     | '/admin/we'
     | '/admin/'
+    | '/admin/tw/$id'
+    | '/admin/tw/new'
     | '/admin/we/$hash'
     | '/admin/we/new'
+    | '/api/tw/$id'
     | '/api/we/$hash'
     | '/api/we/$hash/fav'
     | '/api/we/$hash/img'
@@ -147,6 +183,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
+  ApiTwIdRoute: typeof ApiTwIdRoute
   ApiWeHashRoute: typeof ApiWeHashRouteWithChildren
 }
 
@@ -180,6 +217,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWeRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/tw/$id': {
+      id: '/admin/tw/$id'
+      path: '/$id'
+      fullPath: '/admin/tw/$id'
+      preLoaderRoute: typeof AdminTwIdRouteImport
+      parentRoute: typeof AdminTwRoute
+    }
+    '/admin/tw/new': {
+      id: '/admin/tw/new'
+      path: '/new'
+      fullPath: '/admin/tw/new'
+      preLoaderRoute: typeof AdminTwNewRouteImport
+      parentRoute: typeof AdminTwRoute
+    }
     '/admin/we/$hash': {
       id: '/admin/we/$hash'
       path: '/$hash'
@@ -193,6 +244,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/we/new'
       preLoaderRoute: typeof AdminWeNewRouteImport
       parentRoute: typeof AdminWeRoute
+    }
+    '/api/tw/$id': {
+      id: '/api/tw/$id'
+      path: '/api/tw/$id'
+      fullPath: '/api/tw/$id'
+      preLoaderRoute: typeof ApiTwIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/we/$hash': {
       id: '/api/we/$hash'
@@ -225,6 +283,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminTwRouteChildren {
+  AdminTwIdRoute: typeof AdminTwIdRoute
+  AdminTwNewRoute: typeof AdminTwNewRoute
+}
+
+const AdminTwRouteChildren: AdminTwRouteChildren = {
+  AdminTwIdRoute: AdminTwIdRoute,
+  AdminTwNewRoute: AdminTwNewRoute,
+}
+
+const AdminTwRouteWithChildren =
+  AdminTwRoute._addFileChildren(AdminTwRouteChildren)
+
 interface AdminWeRouteChildren {
   AdminWeHashRoute: typeof AdminWeHashRoute
   AdminWeNewRoute: typeof AdminWeNewRoute
@@ -239,13 +310,13 @@ const AdminWeRouteWithChildren =
   AdminWeRoute._addFileChildren(AdminWeRouteChildren)
 
 interface AdminRouteChildren {
-  AdminTwRoute: typeof AdminTwRoute
+  AdminTwRoute: typeof AdminTwRouteWithChildren
   AdminWeRoute: typeof AdminWeRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
-  AdminTwRoute: AdminTwRoute,
+  AdminTwRoute: AdminTwRouteWithChildren,
   AdminWeRoute: AdminWeRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
 }
@@ -280,6 +351,7 @@ const ApiWeHashRouteWithChildren = ApiWeHashRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
+  ApiTwIdRoute: ApiTwIdRoute,
   ApiWeHashRoute: ApiWeHashRouteWithChildren,
 }
 export const routeTree = rootRouteImport

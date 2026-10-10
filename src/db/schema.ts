@@ -6,6 +6,8 @@ import {
 	text,
 	uniqueIndex,
 } from "drizzle-orm/sqlite-core";
+// TODO: 書き換える
+import type { Tweet } from "react-tweet/api";
 
 export const og = sqliteTable(
 	"og",
@@ -32,17 +34,20 @@ export const tweet = sqliteTable(
 	"tweet",
 	{
 		idStr: text("id_str").primaryKey(),
-		authorScreenName: text("author_screen_name").notNull(),
-		authorName: text("author_name").notNull(),
-		text: text("text").notNull(),
+		authorScreenName: text("author_screen_name"),
+		authorName: text("author_name"),
+		text: text("text"),
 		createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 		likeCount: integer("like_count").notNull().default(0),
 		hasMedia: integer("has_media", { mode: "boolean" })
 			.notNull()
 			.default(false),
-		rawJson: text("raw_json").notNull(),
+		rawJson: text("raw_json", { mode: "json" }).$type<Tweet | null>(),
 		fetchedAt: integer("fetched_at", { mode: "timestamp" }),
 		lastReference: integer("last_reference", { mode: "timestamp" }),
+		tweetDeleted: integer("deleted", { mode: "boolean" })
+			.notNull()
+			.default(false),
 	},
 	(table) => [
 		index("idx_tweets_author_date").on(

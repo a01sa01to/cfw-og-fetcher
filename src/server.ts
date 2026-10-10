@@ -4,6 +4,7 @@ import type { QueueMessage } from "./schema";
 import { weImgKey } from "./utils/constants";
 import { optimizeImageBuffer } from "./utils/image-optimization.server";
 import { ogCrawler } from "./utils/og-crawl.server";
+import { tweetCrawler } from "./utils/tweet-crawl.server";
 
 export default {
 	fetch: (req) => handler.fetch(req),
@@ -36,6 +37,10 @@ export default {
 								contentType: opt.contentType,
 							},
 						});
+						break;
+					}
+					case "tweet-fetch": {
+						await tweetCrawler(msg.body.id).catch(console.error);
 						break;
 					}
 				}
