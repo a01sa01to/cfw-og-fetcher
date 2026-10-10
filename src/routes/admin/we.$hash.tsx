@@ -49,14 +49,14 @@ function RouteComponent() {
 				description: error.message,
 			});
 		},
-		onSuccess: ({ hash }) => {
+		onSuccess: async ({ hash }) => {
 			toast.push({
 				type: "success",
 				title: "Deleted",
 			});
-			queryClient.invalidateQueries(QueryOptions(hash));
-			queryClient.invalidateQueries({ queryKey: getAllData$$key() });
-			navigate({ to: "/admin/we" });
+			await queryClient.invalidateQueries({ queryKey: getAllData$$key() });
+			await navigate({ to: "/admin/we" });
+			queryClient.removeQueries({ queryKey: getDataByHash$$key(hash) });
 		},
 	});
 
