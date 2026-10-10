@@ -1,6 +1,7 @@
 import { env } from "cloudflare:workers";
 import { createFileRoute } from "@tanstack/react-router";
 import * as v from "valibot";
+import { NotFoundSvg } from "~/components/NotFoundSvg";
 import { hashSchema } from "~/schema";
 import { weImgKey } from "~/utils/constants";
 
@@ -26,7 +27,13 @@ export const Route = createFileRoute("/api/we/$hash/img")({
 				});
 
 				if (obj === null) {
-					return new Response("Not Found", { status: 404, headers });
+					return new Response(NotFoundSvg, {
+						status: 404,
+						headers: {
+							"Content-Type": "image/svg+xml",
+							...headers,
+						},
+					});
 				}
 
 				obj.writeHttpMetadata(headers);
