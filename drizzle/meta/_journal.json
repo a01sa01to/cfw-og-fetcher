@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1791296623487,
-      "tag": "0000_curvy_fixer",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1791369081350,
-      "tag": "0001_clean_tombstone",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1791471603533,
-      "tag": "0002_silly_champions",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1791644567344,
-      "tag": "0003_brief_titanium_man",
+      "when": 1791644702648,
+      "tag": "0000_nifty_living_mummy",
       "breakpoints": true
     }
   ]
