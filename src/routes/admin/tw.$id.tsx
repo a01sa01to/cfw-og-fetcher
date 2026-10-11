@@ -7,8 +7,8 @@ import {
 } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+import { EmbeddedTweet, TweetNotFound } from "react-tweet";
 import Card from "~/components/Card";
-import { getTweetTime } from "~/utils/get-tweet-time";
 import {
 	deleteTweetById,
 	fetchTweetById,
@@ -17,6 +17,7 @@ import {
 	getTweetById$$key,
 } from "./-tw.functions";
 import styles from "./tw.module.css";
+import "react-tweet/theme.css";
 
 const QueryOptions = (id: string) =>
 	queryOptions({
@@ -108,39 +109,12 @@ function RouteComponent() {
 			<p>
 				<code className={styles.twid}>{data.idStr}</code>
 			</p>
+			{data.rawJson ? (
+				<EmbeddedTweet tweet={data.rawJson} />
+			) : (
+				<TweetNotFound />
+			)}
 			<Ul spacing="4" className={styles.details}>
-				<li>
-					<strong>Author:</strong>{" "}
-					{data.authorName && data.authorScreenName
-						? `${data.authorName} (@${data.authorScreenName})`
-						: "-"}
-				</li>
-				<li>
-					<strong>Text:</strong>{" "}
-					{data.text ? (
-						<span className={styles.text}>
-							{data.text.split("\n").map((line, index) => (
-								// biome-ignore lint/suspicious/noArrayIndexKey: 行は static なので
-								<span key={index}>
-									{line}
-									<br />
-								</span>
-							))}
-						</span>
-					) : (
-						"-"
-					)}
-				</li>
-				<li>
-					<strong>Tweeted At:</strong>{" "}
-					{data.idStr ? (
-						<time dateTime={getTweetTime(data.idStr).toISOString()}>
-							{getTweetTime(data.idStr).toLocaleString()}
-						</time>
-					) : (
-						"-"
-					)}
-				</li>
 				<li>
 					<strong>Created At:</strong>{" "}
 					<time dateTime={data.createdAt.toISOString()}>
