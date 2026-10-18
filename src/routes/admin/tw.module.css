@@ -1,0 +1,12 @@
+.cell {
+	min-width: 10rem;
+}
+
+.twid {
+	word-break: break-all;
+}
+
+.actions {
+	display: flex;
+	gap: 1rem;
+}

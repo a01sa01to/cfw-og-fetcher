@@ -1,0 +1,13 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index f9e018901d5cae711bee927b62da7ee2a26ddc03..f576ad9aeb8bdf52ff0edc361527b33859531801 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -1433,7 +1433,7 @@ var Pr = ({ toast: e }) => {
+ 		cssStyle: { viewTransitionName: e.id.replaceAll("-", "") }
+ 	});
+ }, Fr = ({ className: e, position: n = "bottom-right", limit: i = 3 }) => {
+-	let a = de(Q.subscribe, Q.getSnapshot).slice(-i);
++	let a = de(Q.subscribe, Q.getSnapshot, Q.getSnapshot).slice(-i);
+ 	return /* @__PURE__ */ t("output", {
+ 		className: r(e, Sr, Cr[n]),
+ 		"aria-live": "polite",

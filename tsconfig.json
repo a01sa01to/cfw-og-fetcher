@@ -1,23 +1,27 @@
 {
+  "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
-    "target": "es2024",
-    "lib": ["es2024"],
+    "target": "esnext",
     "jsx": "react-jsx",
-    "module": "esnext",
-    "moduleResolution": "Bundler",
-    "resolveJsonModule": true,
+    "module": "ESNext",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "lib": ["ESNext", "DOM"],
+    "types": ["vite/client", "./worker-configuration.d.ts"],
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": false,
     "noEmit": true,
-    "isolatedModules": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
+
+    /* Linting */
     "skipLibCheck": true,
-    "allowJs": true
-  },
-  "include": [
-    "worker-configuration.d.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "eslint.config.mjs",
-    ".prettierrc.mjs"
-  ]
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  }
 }

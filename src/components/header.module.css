@@ -1,0 +1,14 @@
+.title {
+	margin-left: 1rem;
+	/* Std-22B-150 */
+	font-size: calc(22 / 16 * 1rem);
+	line-height: 1.5;
+	letter-spacing: 0.02em;
+}
+
+.nav {
+	margin-right: 1rem;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}

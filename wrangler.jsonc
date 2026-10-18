@@ -1,16 +1,30 @@
 {
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "og-fetcher",
-  "main": "src/index.ts",
-  "compatibility_date": "2025-08-15",
+  "compatibility_date": "2025-09-02",
   "compatibility_flags": ["nodejs_compat"],
+  "main": "src/server.ts",
   "observability": {
     "enabled": true,
   },
-  "secrets_store_secrets": [
-    {
-      "binding": "SECRET",
-      "store_id": "2d50ca65503e4129ac7b637ab9c14248",
-      "secret_name": "og-fetcher-token",
-    },
-  ],
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "og-data",
+    "database_id": "31a4e50f-c519-40ac-93cf-348129e41179",
+    "migrations_dir": "drizzle"
+  }],
+  "r2_buckets": [{
+    "binding": "OG_BUCKET",
+    "bucket_name": "og-img"
+  }],
+  "queues": {
+    "consumers": [{
+      "queue": "og-queue",
+      "max_batch_size": 1  // CPU time が timeout しかねないので 1 件ずつ処理
+    }],
+    "producers": [{
+      "binding": "OG_QUEUE",
+      "queue": "og-queue"
+    }]
+  }
 }
